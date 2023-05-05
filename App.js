@@ -7,7 +7,7 @@ import AddFilm from './Views/AddFilm'
 import Item from './Components/Item'
 import Navigation from './Components/Navigation'
 // import ListMovies from './Views/ListMovies'
-
+import AsyncStorage from '@react-native-async-storage/async-storage'; // equivalent du localStorage
 
 
 export default function App(){
@@ -15,15 +15,12 @@ export default function App(){
 
   // Le film que j'input
   const [input, setInput]= useState('') // ou objet selon ce que j'amène de l'api
+  console.log(input)
   // L'ensemble des films
   const [watchList, setWatchList]= useState([])
+  console.log(watchList)
 
   // Fonction pour ajouter de nouveaux films (CREATE)
-  // const addToList=(item)=>{
-  //   setWatchList((prevState)=>{
-  //     return [...prevState, item]
-  //   })
-  // }
   const addToList =()=>{
     const temp = [...watchList]
     temp.push(input)
@@ -32,26 +29,19 @@ export default function App(){
   }
 
   // Fonction pour supprimer un film de la liste  (DELETE)
-  // const getDeleted =(id)=>{
-  //   setWatchList((prevState)=>{
-  //     return prevState.filter((item,index)=>{
-  //       return index !==id;
-  //     })
-  //   })
-  // }
     const getDeleted =(idx)=>{
-      const temp = [...todos]
+      const temp = [...watchList]
       temp.splice(idx,1)
       setWatchList([...temp])
     }
 
 
-  // Fonction pour afficher les films
+  // Fonction pour afficher les films (DISPLAY)
   const showFilm =()=>(
-    watchList.map((watchList,i)=>{
-      <View key={idx}>
-        <Text style={styles.text} key={i}> {watchList} </Text>
-        <Button onPress={()=> getDeleted(idx)} title="Film watched" color="red" />
+    watchList.map((film,i)=>{
+      return <View key={i}>
+        <Text style={styles.text}> {film} </Text>
+        <Button onPress={()=> getDeleted(i)} title="Film watched" color="red" />
       </View>
     }
 ))
@@ -64,7 +54,7 @@ export default function App(){
 
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView>
       {/* File rendering all the movies added */}
       <View>
         <Text>Hello,</Text>
@@ -78,29 +68,15 @@ export default function App(){
         onChangeText={(input)=> setInput(input)}
         value={input}
       />
-      <Button
-        onPress={addToList}
-        title="Add to watchlist"
-        color='#841584'
-      />
+      <View style={styles.button}>
+      <Button onPress={addToList} title="Add to watchlist" color='#841584'/>
+      {console.log(watchList)}
+      </View>
+
 
       {/*Display all the movies */}
       {showFilm()}
 
-
-
-
-      <AddFilm item={addToList} input={input}/>
-
-      {/* // The movies added to watchList */}
-      {watchList && watchList.map((watchList, index)=>( 
-        <Item id={index} item={watchList} deleted={getDeleted}/> 
-      ))} 
-
-      {/* Button to add a new movie */}
-      {/* <Button title="+" onPress={addFilm} /> */}
-
-      {/* BOTTOM NAVIGATION - List of movies / Add a movie */}
       <Navigation />
     </SafeAreaView>
 
@@ -129,8 +105,27 @@ const styles = StyleSheet.create({
     color:'green',
     width:'70%'
   },
+  button:{
+    height: 40,
+    width:'100%', 
+    borderColor: 'gray', 
+    width:'70%',
+    borderWidth: 1 , 
+    color:'red'
+  },
 });
 
+{/* <AddFilm item={addToList} input={input}/> */}
+
+      {/* // The movies added to watchList */}
+      {/* {watchList && watchList.map((watchList, index)=>( 
+        <Item id={index} item={watchList} deleted={getDeleted}/> 
+      ))}  */}
+
+      {/* Button to add a new movie */}
+      {/* <Button title="+" onPress={addFilm} /> */}
+
+      {/* BOTTOM NAVIGATION - List of movies / Add a movie */}
 
 
 
