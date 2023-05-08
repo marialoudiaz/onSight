@@ -4,46 +4,101 @@ import {StyleSheet, SafeAreaView, Button, View, Text } from 'react-native'
 
 // import AsyncStorage from '@react-native-async-storage/async-storage'; // equivalent du localStorage
 import axios from "axios";
-import { Icon } from '@rneui/themed';
-
+// import { DeleteOutlined } from '@ant-design/icons';
 
 export default function App(){
 
   // // Le film que j'input
   const [input, setInput]= useState('') // ou objet selon ce que j'amène de l'api
-  console.log(input)
-
   // L'ensemble des films
   const [watchList, setWatchList]= useState([])
-  console.log(watchList)
+  // Les données de l'api
+  const axios =require('axios');
+  const [state, setState]= useState({
+    title:'',
+    year:'',
+    director:'',
+    length:'',
+  })
+  const [error, setError]=useState('')
 
+  //Variable for title
+  const options = {
+    method: 'GET',
+    url: 'https://moviesdatabase.p.rapidapi.com/titles/x/titles-by-ids',
+    params: {
+      idsList: 'tt0001702,tt0001856,tt0001857'
+    },
+    headers: {
+      'X-RapidAPI-Key': 'f96d605029msh7be90c57aea792ap1ce7c1jsne79eaf074699',
+      'X-RapidAPI-Host': 'moviesdatabase.p.rapidapi.com'
+    }
+  };
+
+  // Variable for year
+
+  
+  //////////////////////////  FONCTIONS ////////////////////////// 
   // Fonction pour ajouter de nouveaux films (CREATE)
   const addToList =()=>{
     const temp = [...watchList]
-    temp.push(input)
+    temp.push({input})
     setWatchList([...temp])
+    // Remet a zero pour prochaine input
     setInput('')
   }
-
   // Fonction pour supprimer un film de la liste  (DELETE)
     const getDeleted =(idx)=>{
       const temp = [...watchList]
       temp.splice(idx,1)
       setWatchList([...temp])
     }
-
   // Fonction pour afficher les films (DISPLAY)
   const showFilm =()=>(
     watchList.map((film,i)=>{
       return <View key={i}>
-        <Text style={styles.text} color="red"> {film} </Text>
+        <View style={styles.text}>{film.title}</View>
+        <View style={styles.text}>{film.year}</View>
+        <View style={styles.text}>{film.director}</View>
+        <View style={styles.text}>{film.length}</View>
+        {/* <Text style={styles.text} color="red"> {film} </Text> */}
 
-        <Icon
-        name='rowing' />
+        {/* <DeleteOutlined/> */}
         <Button onPress={()=> getDeleted(i)} title="film watched" color="red" />
       </View>
     }
-))
+  ))
+
+  //Fonction pour récupérer les données de l'api
+  const findMovie = input =>{
+    //URL API
+    let url = `${input}`;
+
+    axios
+      .get(url)
+      .then((res)=>{
+        debugger
+        let {Title, Year, Director, Length} = res.data;
+        setState({title: Title, year: Year, director: Director,length:Length});
+     })
+      .catch((error) => {
+        debugger
+        console.log(error)
+        setError(error.message)
+      });
+    };
+
+    try {
+      const response = await axios.request(options);
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+
+    // Prend chaque input - trouver comment passer n'importe quel inpur
+    useEffect(()=>{
+      findMovie(input)
+    },[])
 
   return (
     <SafeAreaView>
