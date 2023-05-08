@@ -1,21 +1,18 @@
 import React, {useState} from 'react'
-import BottomNavigation, { TextInput } from 'react-native-paper';
+import { TextInput } from 'react-native-paper';
 import {StyleSheet, SafeAreaView, Button, View, Text } from 'react-native'
-// import { NavigationContainer } from "@react-navigation/native";
-// import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import AddFilm from './Views/AddFilm'
-import Item from './Components/Item'
-import Navigation from './Components/Navigation'
-// import ListMovies from './Views/ListMovies'
-import AsyncStorage from '@react-native-async-storage/async-storage'; // equivalent du localStorage
+
+// import AsyncStorage from '@react-native-async-storage/async-storage'; // equivalent du localStorage
+import axios from "axios";
+import { Icon } from '@rneui/themed';
 
 
 export default function App(){
 
-
-  // Le film que j'input
+  // // Le film que j'input
   const [input, setInput]= useState('') // ou objet selon ce que j'amène de l'api
   console.log(input)
+
   // L'ensemble des films
   const [watchList, setWatchList]= useState([])
   console.log(watchList)
@@ -35,23 +32,18 @@ export default function App(){
       setWatchList([...temp])
     }
 
-
   // Fonction pour afficher les films (DISPLAY)
   const showFilm =()=>(
     watchList.map((film,i)=>{
       return <View key={i}>
-        <Text style={styles.text}> {film} </Text>
-        <Button onPress={()=> getDeleted(i)} title="Film watched" color="red" />
+        <Text style={styles.text} color="red"> {film} </Text>
+
+        <Icon
+        name='rowing' />
+        <Button onPress={()=> getDeleted(i)} title="film watched" color="red" />
       </View>
     }
 ))
-
-// // Navigate to AddFilm
-// const addFilm =()=>{
-//   navigation.navigate("AddFilm")}
-  
-// }
-
 
   return (
     <SafeAreaView>
@@ -62,22 +54,20 @@ export default function App(){
          {/* recupérer nombre de films de la liste total (length of watchList) */}
       </View>
 
-      {/* The input field */}
-      <TextInput
-        style={styles.input}
-        onChangeText={(input)=> setInput(input)}
-        value={input}
-      />
+    {/* The input field */}
+      <View>
+        <TextInput onChangeText={(input)=> setInput(input)}  value={input}/>
+      </View>
+
       <View style={styles.button}>
+      
       <Button onPress={addToList} title="Add to watchlist" color='#841584'/>
-      {console.log(watchList)}
+      {console.log(watchList)} 
       </View>
 
 
       {/*Display all the movies */}
-      {showFilm()}
-
-      <Navigation />
+      {watchList.length >0 && showFilm()}
     </SafeAreaView>
 
     )
@@ -101,9 +91,8 @@ const styles = StyleSheet.create({
     borderWidth: 1  
   },
   text:{
-    fontSize:20,
-    color:'green',
-    width:'70%'
+    fontSize:15,
+    color:'black',
   },
   button:{
     height: 40,
@@ -114,20 +103,6 @@ const styles = StyleSheet.create({
     color:'red'
   },
 });
-
-{/* <AddFilm item={addToList} input={input}/> */}
-
-      {/* // The movies added to watchList */}
-      {/* {watchList && watchList.map((watchList, index)=>( 
-        <Item id={index} item={watchList} deleted={getDeleted}/> 
-      ))}  */}
-
-      {/* Button to add a new movie */}
-      {/* <Button title="+" onPress={addFilm} /> */}
-
-      {/* BOTTOM NAVIGATION - List of movies / Add a movie */}
-
-
 
 
 
@@ -148,3 +123,21 @@ const styles = StyleSheet.create({
         <Stack.Screen name="AddFilm" component={AddFilm} />
       </Stack.Navigator>
       </NavigationContainer> */}
+
+      // // Navigate to AddFilm
+// const addFilm =()=>{
+//   navigation.navigate("AddFilm")}
+  
+// }
+
+{/* <AddFilm item={addToList} input={input}/> */}
+
+      {/* // The movies added to watchList */}
+      {/* {watchList && watchList.map((watchList, index)=>( 
+        <Item id={index} item={watchList} deleted={getDeleted}/> 
+      ))}  */}
+
+      {/* Button to add a new movie */}
+      {/* <Button title="+" onPress={addFilm} /> */}
+
+      {/* BOTTOM NAVIGATION - List of movies / Add a movie */}
