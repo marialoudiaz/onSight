@@ -1,134 +1,131 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { TextInput } from 'react-native-paper';
 import {StyleSheet, SafeAreaView, Button, View, Text } from 'react-native'
+import axios from 'axios';
 
-// import AsyncStorage from '@react-native-async-storage/async-storage'; // equivalent du localStorage
-import axios from "axios";
-// import { DeleteOutlined } from '@ant-design/icons';
+
 
 export default function App(){
 
-  // // Le film que j'input
-  const [input, setInput]= useState('') // ou objet selon ce que j'amène de l'api
-  // L'ensemble des films
-  const [watchList, setWatchList]= useState([])
+  //length of watchList
+  const [lengthList, setLengthList]=useState(0)
+
   // Les données de l'api
-  const axios =require('axios');
-  const [state, setState]= useState({
+  const [movie, setMovie]= useState({
     title:'',
     year:'',
-    director:'',
-    length:'',
+    runtime:'',
+    genre:'',
+    director:''
   })
-  const [error, setError]=useState('')
 
-  //Variable for title
-  const options = {
-    method: 'GET',
-    url: 'https://moviesdatabase.p.rapidapi.com/titles/x/titles-by-ids',
-    params: {
-      idsList: 'tt0001702,tt0001856,tt0001857'
-    },
-    headers: {
-      'X-RapidAPI-Key': 'f96d605029msh7be90c57aea792ap1ce7c1jsne79eaf074699',
-      'X-RapidAPI-Host': 'moviesdatabase.p.rapidapi.com'
-    }
+  // L'ensemble des films
+  const [watchList, setWatchList]= useState([])
+  // State component for error
+  const [error, setError]=useState('')
+  const [isReady, setIsReady]= useState(false);
+  const [loading, setLoading]= useState(false);
+  
+
+  /////////////////////////// A VERIFIER ////////////////////////////////////////////////////
+  // ce qui est input
+  const handleChange =(value)=> setMovie({...movie, movie: value});
+  // ce qui est submit
+  const handleSubmit = ()=> {setLoading(true); findMovie(movie.movie); };
+  
+
+
+  //////////////////////////  FONCTIONS ////////////////////////// 
+  const addToWatchList = () => {
+    const newMovie = {
+      title: movie.title,
+      year: movie.year,
+      runtime: movie.runtime,
+      genre: movie.genre,
+      director: movie.director
+    };
+    setWatchList([...watchList, newMovie]);
+    setMovie({
+      title:'',
+      year:'',
+      runtime:'',
+      genre:'',
+      director:''
+    });
   };
 
-  // Variable for year
 
-  
-  //////////////////////////  FONCTIONS ////////////////////////// 
-  // Fonction pour ajouter de nouveaux films (CREATE)
-  const addToList =()=>{
-    const temp = [...watchList]
-    temp.push({input})
-    setWatchList([...temp])
-    // Remet a zero pour prochaine input
-    setInput('')
-  }
   // Fonction pour supprimer un film de la liste  (DELETE)
     const getDeleted =(idx)=>{
       const temp = [...watchList]
       temp.splice(idx,1)
       setWatchList([...temp])
     }
+  
+
   // Fonction pour afficher les films (DISPLAY)
   const showFilm =()=>(
     watchList.map((film,i)=>{
       return <View key={i}>
         <View style={styles.text}>{film.title}</View>
         <View style={styles.text}>{film.year}</View>
+        <View style={styles.text}>{film.runtime}</View>
+        <View style={styles.text}>{film.genre}</View>
         <View style={styles.text}>{film.director}</View>
-        <View style={styles.text}>{film.length}</View>
         {/* <Text style={styles.text} color="red"> {film} </Text> */}
-
         {/* <DeleteOutlined/> */}
         <Button onPress={()=> getDeleted(i)} title="film watched" color="red" />
       </View>
     }
   ))
 
-  //Fonction pour récupérer les données de l'api
-  const findMovie = input =>{
-    //URL API
-    let url = `${input}`;
 
-    axios
-      .get(url)
-      .then((res)=>{
-        debugger
-        let {Title, Year, Director, Length} = res.data;
-        setState({title: Title, year: Year, director: Director,length:Length});
-     })
-      .catch((error) => {
-        debugger
-        console.log(error)
-        setError(error.message)
-      });
+  //Fonction pour récupérer les données de l'api à partir du titre inputed
+    const findMovie = async (movie) => {
+      const url = `https://omdbapi.com?t=${movie}&apikey=thewdb`
+      try {
+        const res = await axios.get(url);
+        // if response is true 
+        let {Title, Year, Runtime, Genre, Director} = res.data;
+        // Destructure l'objet recu
+        setMovie({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, movie:''});
+        addToWatchList()
+        setIsReady(true); setError(Error);
+      } // fetchMovieDetails(imdb_id);
+       catch (error) {
+       setError(error.message); setIsReady(true);
+      }
     };
 
-    try {
-      const response = await axios.request(options);
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-    }
+    // Fonction pour calculer le nombre de films dans la watchList
+    const moviesLeft=()=>{return setLengthList(watchList.length) }
 
-    // Prend chaque input - trouver comment passer n'importe quel inpur
+
+    // Re-render when number of item change in watchList (permet de changer nombre d'items affichés dans la liste)
     useEffect(()=>{
-      findMovie(input)
-    },[])
+      // findMovie(movie)
+      moviesLeft()
+    },[watchList])
+
+
+
 
   return (
     <SafeAreaView>
       {/* File rendering all the movies added */}
       <View>
-        <Text>Hello,</Text>
-        <Text>you have films left</Text> 
-         {/* recupérer nombre de films de la liste total (length of watchList) */}
+        <Text>Hello,</Text><Text>you have {lengthList} films left</Text> 
       </View>
 
-    {/* The input field */}
-      <View>
-        <TextInput onChangeText={(input)=> setInput(input)}  value={input}/>
-      </View>
+      <View> <TextInput onChangeText={handleChange}  value={movie.movie}/> </View>
+      <View style={styles.button}> <Button onPress={handleSubmit} title="Add to watchlist" color='#841584'/> </View>
 
-      <View style={styles.button}>
-      
-      <Button onPress={addToList} title="Add to watchlist" color='#841584'/>
-      {console.log(watchList)} 
-      </View>
-
-
-      {/*Display all the movies */}
+      {/*Display all the movies stored in watchList */}
       {watchList.length >0 && showFilm()}
     </SafeAreaView>
 
     )
 }
-
-
 
 const styles = StyleSheet.create({
   container: {
