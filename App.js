@@ -1,51 +1,40 @@
 import React, {useState, useEffect} from 'react'
-import { TextInput } from 'react-native-paper';
-import {StyleSheet, SafeAreaView, Button, View, Text } from 'react-native'
-import axios from 'axios';
-
-
+import {StyleSheet, SafeAreaView, Button, View, Text,TextInput } from 'react-native'
+import axios from 'axios'
 
 export default function App(){
-
-  //length of watchList
-  const [lengthList, setLengthList]=useState(0)
-
-  // Les données de l'api
-  const [movie, setMovie]= useState({
-    title:'',
-    year:'',
-    runtime:'',
-    genre:'',
-    director:''
-  })
-
-  // L'ensemble des films
-  const [watchList, setWatchList]= useState([])
-  // State component for error
-  const [error, setError]=useState('')
-  const [isReady, setIsReady]= useState(false);
-  const [loading, setLoading]= useState(false);
-  
-
-  /////////////////////////// A VERIFIER ////////////////////////////////////////////////////
-  // ce qui est input
-  const handleChange =(value)=> setMovie({...movie, movie: value});
-  // ce qui est submit
-  const handleSubmit = ()=> {setLoading(true); findMovie(movie.movie); };
-  
+//length of watchList
+const [lengthList, setLengthList]=useState(0)
 
 
-  //////////////////////////  FONCTIONS ////////////////////////// 
-  const addToWatchList = () => {
-    const newMovie = {
-      title: movie.title,
-      year: movie.year,
-      runtime: movie.runtime,
-      genre: movie.genre,
-      director: movie.director
+
+// Les données de l'api
+const [movie, setMovie]= useState({movie:'',title:'',year:'',runtime:'',genre:'',director:''})
+// L'ensemble des films
+const [watchList, setWatchList]= useState([])
+// State component for error
+const [error, setError]=useState('')
+// const [isReady, setIsReady]= useState(false);
+// const [loading, setLoading]= useState(false);
+
+// ce qui est input
+const handleChange=(value)=>setMovie({...movie, movie: value});
+// ce qui est submit
+const handleSubmit=()=>{findMovie(movie.movie)};
+
+//Fonctions
+const addToWatchList = (m) => {
+  console.log("movie:  ",movie)
+const newMovie = {
+      title: m.title,
+      year: m.year,
+      runtime: m.runtime,
+      genre: m.genre,
+      director: m.director
     };
     setWatchList([...watchList, newMovie]);
     setMovie({
+      movie:'',
       title:'',
       year:'',
       runtime:'',
@@ -53,7 +42,6 @@ export default function App(){
       director:''
     });
   };
-
 
   // Fonction pour supprimer un film de la liste  (DELETE)
     const getDeleted =(idx)=>{
@@ -67,14 +55,16 @@ export default function App(){
   const showFilm =()=>(
     watchList.map((film,i)=>{
       return <View key={i}>
-        <View style={styles.text}>{film.title}</View>
-        <View style={styles.text}>{film.year}</View>
-        <View style={styles.text}>{film.runtime}</View>
-        <View style={styles.text}>{film.genre}</View>
-        <View style={styles.text}>{film.director}</View>
+        <View style={styles.text}>
+          <Text>{film.title}</Text>
+          <Text>{film.year}</Text>
+          <Text>{film.runtime}</Text>
+          <Text>{film.genre}</Text>
+          <Text>{film.director}</Text>
+        </View>
         {/* <Text style={styles.text} color="red"> {film} </Text> */}
         {/* <DeleteOutlined/> */}
-        <Button onPress={()=> getDeleted(i)} title="film watched" color="red" />
+        <Button onPress={()=> getDeleted(i)} title="delete" color="red" />
       </View>
     }
   ))
@@ -82,50 +72,50 @@ export default function App(){
 
   //Fonction pour récupérer les données de l'api à partir du titre inputed
     const findMovie = async (movie) => {
-      const url = `https://omdbapi.com?t=${movie}&apikey=thewdb`
+      const url= `http://www.omdbapi.com/?t=${movie}&apikey=348eb517`
+      // const url = `http://www.omdbapi.com/?i=${movie}&apikey=348eb517`
+      console.log(url)
       try {
         const res = await axios.get(url);
+        console.log(res)
         // if response is true 
         let {Title, Year, Runtime, Genre, Director} = res.data;
-        // Destructure l'objet recu
+        console.log(res.data)
+        console.log(81,{title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, movie:''})
+        // Destructure l'objet reçu
         setMovie({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, movie:''});
-        addToWatchList()
-        setIsReady(true); setError(Error);
-      } // fetchMovieDetails(imdb_id);
-       catch (error) {
-       setError(error.message); setIsReady(true);
+        addToWatchList({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, movie:''})
+        // setIsReady(true); setError(Error);
+      }catch (error) {
+       setError(error.message); 
+      //  setIsReady(true);
       }
     };
 
     // Fonction pour calculer le nombre de films dans la watchList
     const moviesLeft=()=>{return setLengthList(watchList.length) }
 
-
     // Re-render when number of item change in watchList (permet de changer nombre d'items affichés dans la liste)
     useEffect(()=>{
       // findMovie(movie)
       moviesLeft()
     },[watchList])
-
-
-
+    console.log("watchList: ",watchList)
 
   return (
-    <SafeAreaView>
-      {/* File rendering all the movies added */}
-      <View>
-        <Text>Hello,</Text><Text>you have {lengthList} films left</Text> 
-      </View>
+<SafeAreaView>
+<View>
+<Text>Hello,</Text>
+<Text>you have{lengthList}films left</Text>
+</View>
+<TextInput style={styles.input} onChangeText={handleChange}  value={movie.movie}/>
+<View style={styles.button}><Button onPress={handleSubmit} title="Add to watchlist" color="#841584"/></View>
 
-      <View> <TextInput onChangeText={handleChange}  value={movie.movie}/> </View>
-      <View style={styles.button}> <Button onPress={handleSubmit} title="Add to watchlist" color='#841584'/> </View>
-
-      {/*Display all the movies stored in watchList */}
-      {watchList.length >0 && showFilm()}
-    </SafeAreaView>
-
-    )
+{watchList.length>0 && showFilm()}
+</SafeAreaView>
+)
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -155,41 +145,3 @@ const styles = StyleSheet.create({
     color:'red'
   },
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{/* <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="AddFilm" component={AddFilm} />
-      </Stack.Navigator>
-      </NavigationContainer> */}
-
-      // // Navigate to AddFilm
-// const addFilm =()=>{
-//   navigation.navigate("AddFilm")}
-  
-// }
-
-{/* <AddFilm item={addToList} input={input}/> */}
-
-      {/* // The movies added to watchList */}
-      {/* {watchList && watchList.map((watchList, index)=>( 
-        <Item id={index} item={watchList} deleted={getDeleted}/> 
-      ))}  */}
-
-      {/* Button to add a new movie */}
-      {/* <Button title="+" onPress={addFilm} /> */}
-
-      {/* BOTTOM NAVIGATION - List of movies / Add a movie */}
