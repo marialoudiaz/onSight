@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {StyleSheet, SafeAreaView, Button, View, Text,TextInput, Image, Alert, FlatList } from 'react-native'
+import {StyleSheet, SafeAreaView, Button, View, Text,TextInput, Image, Alert, ScrollView } from 'react-native'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
@@ -49,9 +49,16 @@ const styles = StyleSheet.create({
   container: {
     flex:1,
     top:30,
-    backgroundColor: '#fff',
+    backgroundColor: '#1E2978',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  heading:{
+    color:'#FFF',
+    fontSize: 18,
+    fontWeight: '700',
+    padding:20,
+    backgroundColor: '#445565'
   },
   input:{
     height: 40,
@@ -97,30 +104,69 @@ const styles = StyleSheet.create({
   titleFlatList: {
     fontSize: 32,
   },
+  searchbox:{
+    fontSize: 20,
+    fontWeight: '300',
+    padding:20,
+    width:'90%',
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    marginLeft: 10,
+    marginRight: 10,
 
+    marginBottom: 40,
+
+  },
+  results:{
+  flex: 1
+  },
+  result:{
+    flex: 1,
+    width:'100%',
+    marginBottom: 20,
+  }
 });
 
 const myAlert =(i)=>{
-  Alert.alert(
-    'Reset Data',
-    'Are you sure you want to delete this movie from the list ?',
-    [
-      {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-      {text: 'OK', onPress: () => getDeleted(i) },
-    ],
-    {cancelable: false}
-  )
+  Alert.alert('Reset Data','Are you sure you want to delete this movie from the list ?',
+    [{text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'}, {text: 'OK', onPress: () => getDeleted(i) },],{cancelable: false})
 }
+
+  const [s, setS] = useState('Enter a movie'); 
+  const [results, setResults] = useState([]); 
+  // const [selected, setSelected] = useState({}); -- if popUp fonction is created
+
 // // L'ensemble des films
 // const [watchList, setWatchList]= useState([])
 
 //////////////////// END IF STATE COMPONENTS AND VARIABLES /////////////////////////
 
 //////////////////// FONCTIONS ///////////////////////////////////////////////
-// ce qui est input
-const handleChange=(value)=>setInput(value);
+// // ce qui est input
+// const handleChange=(value)=>setInput(value);
 // ce qui est submit
-const handleSubmit=()=>{findMovie(input)};
+// comment passer result.Title ? 
+
+const handleSubmit=(title)=>{
+  setInput(title);
+  findMovie(input)
+};
+
+ 
+const searchFilm = (s) => {
+  console.log('input',s)  
+  const url= `http://www.omdbapi.com/?t=${s}&apikey=348eb517`;
+  axios(url).then(({ data }) => { 
+    console.log('data',data)
+    if (!data.Response){
+      setError('Movie not found')
+    } else{
+      let newResults = data.search; 
+      setResults(newResults); 
+    }
+  }); 
+}; 
+console.log('results array', results)
 
 //Fonctions
 const addToWatchList = (movie) => {
@@ -144,12 +190,9 @@ const newMovie = {
     _storeData(); // une fois data ajoutés au component data, je lance la fonction _storeData
     _retrieveData()
   };
-
-    const triggerAlert=(i)=>{
-      myAlert(i)
-    }  
  
   // Fonction pour supprimer un film de la liste  (DELETE)
+    const triggerAlert=(i)=>{myAlert(i)}  
     const getDeleted =(i)=>{
       const temp = [...retrievedData]
       temp.splice(i,1)
@@ -168,7 +211,6 @@ const newMovie = {
           <Text>{movie.director}</Text>
           <Image style={styles.image} source={{uri: `${movie.poster}`}}/>
         </View>
-        
         <Button onPress={()=> triggerAlert(i)} title="delete" style={styles.text} />
           {/* // getDeleted(i) myAlert(i)*/}
         <View style={styles.alert}></View>
@@ -204,14 +246,25 @@ const newMovie = {
     },[retrievedData])
 
   return (
-<SafeAreaView>
+<SafeAreaView style={styles.container}>
 <View>
 <Text>Hello,</Text>
 <Text>you have{lengthList}films left</Text>
 </View>
-<TextInput style={styles.input} onChangeText={handleChange} value={input}/>
-<View style={styles.button}><Button onPress={handleSubmit} title="Add to watchlist" color="#841584"/></View>
-
+{/* <TextInput style={styles.input} onChangeText={handleChange} value={input}/> */}
+<TextInput style={styles.searchbox} value={s}  onChangeText={(text) => setS(text)}/>
+<Button onPress={searchFilm(s)} title="Search" color="#841584"/>
+{/* The suggestion from search */}
+<ScrollView style={styles.results}> 
+			{results.length>0 && results.map((result) => (
+      <View key={result.imdbId} style={styles.result}> 
+					<Text style={styles.heading}>{result.Title}</Text> 
+					<Image source={{ uri: result.Poster }} resizeMode="cover" /> 
+          <View style={styles.button}><Button onPress={handleSubmit(result.Title)} title="Add to watchlist" color="#841584"/></View>
+				</View> 
+			))} 
+</ScrollView>
+{/* <Button title="Add to Watchlist" onPress={()=>addToWatchList(result.imdbId)} />  */}
 {retrievedData.length>0 && showFilm()}
 </SafeAreaView>
 )
