@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react'
-import {StyleSheet, SafeAreaView, Button, View, Text,TextInput, Image, Alert } from 'react-native'
+import {StyleSheet, SafeAreaView, Button, View, Text,TextInput, Image, Alert, FlatList } from 'react-native'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
 
 
@@ -82,7 +83,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     color: 'red'
-  }
+  },
+  containerFlatlist:{
+    flex:1,
+    marginTop: Constants.statusBarHeight,
+  },
+  itemFlatList:{
+    backgroundColor: '#f9c2ff',
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+  titleFlatList: {
+    fontSize: 32,
+  },
+
 });
 
 const myAlert =(i)=>{
