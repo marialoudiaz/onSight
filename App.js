@@ -37,28 +37,39 @@ const _retrieveData = async () => {
 //////////////////// STATE COMPONENTS AND VARIABLES /////////////////////////
 //length of watchList
 const [lengthList, setLengthList]=useState(0)
-
 // Les données de l'api
 const [movie, setMovie]= useState({title:'',year:'',runtime:'',genre:'',director:'', poster:''})
 //state component pour l'input
 const [input, setInput]=useState('')
-
 // State component for error
 const [error, setError]=useState('')
+const [s, setS] = useState('Enter a movie'); 
+const [results, setResults] = useState([]); 
+const myAlert =(i)=>{
+  Alert.alert('Reset Data','Are you sure you want to delete this movie from the list ?',
+    [{text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'}, {text: 'OK', onPress: () => getDeleted(i) },],{cancelable: false})
+}
 const styles = StyleSheet.create({
   container: {
     flex:1,
-    top:30,
     backgroundColor: '#1E2978',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   heading:{
-    color:'#FFF',
-    fontSize: 18,
-    fontWeight: '700',
-    padding:20,
-    backgroundColor: '#445565'
+    fontSize: 30,
+    marginTop:40,
+    marginBottom: 10,
+    marginLeft: 10,
+    color:'white',
+    alignItems:'flex-start',
+    justifyContent: 'flex-start'
+  },
+  subHeading:{
+    fontSize: 20,
+    marginBottom: 30,
+    marginLeft: 10,
+    color:'white',
+    alignItems:'flex-start',
+    justifyContent: 'flex-start'
   },
   input:{
     height: 40,
@@ -69,6 +80,7 @@ const styles = StyleSheet.create({
   },
   text:{
     fontSize:15,
+    backgroundColor: 'gray',
     color:'black',
   },
   button:{
@@ -76,8 +88,9 @@ const styles = StyleSheet.create({
     width:'100%', 
     borderColor: 'gray', 
     width:'70%',
-    borderWidth: 1 , 
-    color:'red'
+    borderWidth: 1 ,
+    borderRadius: 20,
+    backgroundColor: 'white'
   },
   image:{
     minWidth: 60, 
@@ -91,19 +104,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     color: 'red'
   },
-  containerFlatlist:{
-    flex:1,
-    marginTop: Constants.statusBarHeight,
-  },
-  itemFlatList:{
-    backgroundColor: '#f9c2ff',
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-  },
-  titleFlatList: {
-    fontSize: 32,
-  },
   searchbox:{
     fontSize: 20,
     fontWeight: '300',
@@ -113,70 +113,75 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginLeft: 10,
     marginRight: 10,
-
     marginBottom: 40,
-
   },
   results:{
-  flex: 1
+  flex:1,
+  backgroundColor: '#FFF',
+  color:'black'
   },
   result:{
-    flex: 1,
     width:'100%',
     marginBottom: 20,
+    
   }
 });
-
-const myAlert =(i)=>{
-  Alert.alert('Reset Data','Are you sure you want to delete this movie from the list ?',
-    [{text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'}, {text: 'OK', onPress: () => getDeleted(i) },],{cancelable: false})
-}
-
-  const [s, setS] = useState('Enter a movie'); 
-  const [results, setResults] = useState([]); 
-  // const [selected, setSelected] = useState({}); -- if popUp fonction is created
-
-// // L'ensemble des films
+//L'ensemble des films
 // const [watchList, setWatchList]= useState([])
-
 //////////////////// END IF STATE COMPONENTS AND VARIABLES /////////////////////////
 
 //////////////////// FONCTIONS ///////////////////////////////////////////////
 // // ce qui est input
 // const handleChange=(value)=>setInput(value);
-// ce qui est submit
-// comment passer result.Title ? 
 
-const handleSubmit=(title)=>{
-  setInput(title);
-  findMovie(input)
-};
+/////////////////////////////////// FOR SEARCH ///////////////////////////////////////
 
- 
+
 const searchFilm = (s) => {
-  console.log('input',s)  
-  const url= `http://www.omdbapi.com/?t=${s}&apikey=348eb517`;
-  axios(url).then(({ data }) => { 
+  console.log('s',s)  
+  const url= `http://www.omdbapi.com/?s=${s}&apikey=348eb517`;
+  axios(url).then(({ data }) => {
     console.log('data',data)
     if (!data.Response){
       setError('Movie not found')
     } else{
-      let newResults = data.search; 
+      // chaque object.search envoyé dans setResults en tant qu'object 
+      console.log('data Search', data.Search)
+      // Change l'état de results à l'array des recherches trouvées
+      let newResults = data.Search
       setResults(newResults); 
     }
   }); 
 }; 
 console.log('results array', results)
 
-//Fonctions
-const addToWatchList = (movie) => {
+const showResult=()=>{
+  console.log('results passed to showResult', results)
+  return results.map((result,i) => (
+    <View key={i} style={styles.result}> 
+        <Text style={styles.text}>{result.Title}</Text> 
+        <Image source={{uri:`${result.Poster}`}} resizeMode="cover" /> 
+        <View style={styles.button}><Button onPress={()=>handleSubmit(result.Title)} title="Add to watchlist" color="#841584"/></View>
+    </View> 
+    ))} 
+
+// ce qui est submit
+const handleSubmit=(title)=>{
+  console.log('title',title)
+  setInput(title);
+  setResults([])
+  findMovie(title)
+};
+/////////////////////////////////// FOR WATCHLIST ///////////////////////////////////////
+
+const addToWatchList = ({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster}) => {
 const newMovie = {
-      title: movie.title,
-      year: movie.year,
-      runtime: movie.runtime,
-      genre: movie.genre,
-      director: movie.director,
-      poster: movie.poster
+      title: Title,
+      year: Year,
+      runtime: Runtime,
+      genre: Genre,
+      director: Director,
+      poster: Poster
     };
     setData([...data, newMovie]); // au lieu de watchList
     setMovie({
@@ -209,7 +214,7 @@ const newMovie = {
           <Text>{movie.runtime}</Text>
           <Text>{movie.genre}</Text>
           <Text>{movie.director}</Text>
-          <Image style={styles.image} source={{uri: `${movie.poster}`}}/>
+          <Image style={styles.image} source={{uri:`${movie.poster}`}}/>
         </View>
         <Button onPress={()=> triggerAlert(i)} title="delete" style={styles.text} />
           {/* // getDeleted(i) myAlert(i)*/}
@@ -219,8 +224,8 @@ const newMovie = {
   ))
 
   //Fonction pour récupérer les données de l'api à partir du titre inputed
-    const findMovie = async (input) => {
-      const url= `http://www.omdbapi.com/?t=${input}&apikey=348eb517`
+    const findMovie = async (title) => {
+      const url= `http://www.omdbapi.com/?t=${title}&apikey=348eb517`
       try {
         const res = await axios.get(url);
         console.log(res)
@@ -230,42 +235,38 @@ const newMovie = {
         console.log(81,{title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster})
         // Destructure l'objet reçu
         setMovie({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster});
+        // trigger addToWatchList
         addToWatchList({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster})
       }catch (error) {
        setError(error.message); 
       }
     };
 
-    // Fonction pour calculer le nombre de films dans la watchList
-    const moviesLeft=()=>{return setLengthList(retrievedData.length)}
+  // Fonction pour calculer le nombre de films dans la watchList
+     const moviesLeft=()=>{return setLengthList(retrievedData.length)}
 
-    // Re-render when number of item change in watchList (permet de changer nombre d'items affichés dans la liste)
+  // Re-render when number of item change in watchList (permet de changer nombre d'items affichés dans la liste)
     useEffect(()=>{
-    // findMovie
+  // findMovie
     moviesLeft();
     },[retrievedData])
 
+////////////////////////////////////////// FOR RETURN //////////////////////////////////////////
+
   return (
-<SafeAreaView style={styles.container}>
-<View>
-<Text>Hello,</Text>
-<Text>you have{lengthList}films left</Text>
-</View>
-{/* <TextInput style={styles.input} onChangeText={handleChange} value={input}/> */}
-<TextInput style={styles.searchbox} value={s}  onChangeText={(text) => setS(text)}/>
-<Button onPress={searchFilm(s)} title="Search" color="#841584"/>
-{/* The suggestion from search */}
-<ScrollView style={styles.results}> 
-			{results.length>0 && results.map((result) => (
-      <View key={result.imdbId} style={styles.result}> 
-					<Text style={styles.heading}>{result.Title}</Text> 
-					<Image source={{ uri: result.Poster }} resizeMode="cover" /> 
-          <View style={styles.button}><Button onPress={handleSubmit(result.Title)} title="Add to watchlist" color="#841584"/></View>
-				</View> 
-			))} 
-</ScrollView>
-{/* <Button title="Add to Watchlist" onPress={()=>addToWatchList(result.imdbId)} />  */}
-{retrievedData.length>0 && showFilm()}
-</SafeAreaView>
-)
+    <SafeAreaView style={styles.container}>
+    <View>
+      <Text style={styles.heading}>Hello,</Text>
+      <Text style={styles.subHeading}>you have{lengthList}films left</Text>
+    </View>
+    {/* <TextInput style={styles.input} onChangeText={handleChange} value={input}/> */}
+    <TextInput style={styles.searchbox} value={s} onChangeText={(text) => setS(text)}/>
+    <Button style={styles.button} onPress={()=>searchFilm(s)} title="Search" color="#fff"/>
+    {/* The suggestion from search + Triggered quand results a des items */}
+    <ScrollView style={styles.results}>
+      {results.length>0 && showResult()}
+    </ScrollView>
+    {retrievedData.length>0 && showFilm()}
+    </SafeAreaView>
+  )
 }
