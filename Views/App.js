@@ -2,12 +2,15 @@ import React, {useState, useEffect} from 'react'
 import {StyleSheet, SafeAreaView, Button, View, Text,TextInput, Image, Alert, ScrollView } from 'react-native'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
+import {container, searchContainer, resultsContainer, input, text, button, image, alert, searchbox, results, result, addButton, innerShadow, dropShadow} from '../style/style.js';
+import {useFonts} from 'expo-font';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Font from 'expo-font';
+import InsetShadow from "react-native-inset-shadow";
 
 
 
 export default function App(){
-
 //////////////////// USE OF ASYNCSTORAGE /////////////////////////
 // the data to store (items)
 const [data, setData]=useState([])
@@ -43,89 +46,17 @@ const [movie, setMovie]= useState({title:'',year:'',runtime:'',genre:'',director
 const [input, setInput]=useState('')
 // State component for error
 const [error, setError]=useState('')
-const [s, setS] = useState('Enter a movie'); 
+const [s, setS] = useState(''); 
 const [results, setResults] = useState([]); 
 const myAlert =(i)=>{
   Alert.alert('Reset Data','Are you sure you want to delete this movie from the list ?',
     [{text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'}, {text: 'OK', onPress: () => getDeleted(i) },],{cancelable: false})
 }
-const styles = StyleSheet.create({
-  container: {
-    flex:1,
-    backgroundColor: '#1E2978',
-  },
-  heading:{
-    fontSize: 30,
-    marginTop:40,
-    marginBottom: 10,
-    marginLeft: 10,
-    color:'white',
-    alignItems:'flex-start',
-    justifyContent: 'flex-start'
-  },
-  subHeading:{
-    fontSize: 20,
-    marginBottom: 30,
-    marginLeft: 10,
-    color:'white',
-    alignItems:'flex-start',
-    justifyContent: 'flex-start'
-  },
-  input:{
-    height: 40,
-    width:'100%', 
-    borderColor: 'gray', 
-    width:'70%',
-    borderWidth: 1  
-  },
-  text:{
-    fontSize:15,
-    backgroundColor: 'gray',
-    color:'black',
-  },
-  button:{
-    height: 40,
-    width:'100%', 
-    borderColor: 'gray', 
-    width:'70%',
-    borderWidth: 1 ,
-    borderRadius: 20,
-    backgroundColor: 'white'
-  },
-  image:{
-    minWidth: 60, 
-    minHeight: 60, 
-    marginBottom:10,
-  },
-  alert:{
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: 'red'
-  },
-  searchbox:{
-    fontSize: 20,
-    fontWeight: '300',
-    padding:20,
-    width:'90%',
-    backgroundColor: '#FFF',
-    borderRadius: 8,
-    marginLeft: 10,
-    marginRight: 10,
-    marginBottom: 40,
-  },
-  results:{
-  flex:1,
-  backgroundColor: '#FFF',
-  color:'black'
-  },
-  result:{
-    width:'100%',
-    marginBottom: 20,
-    
-  }
-});
+
+///////////////////// TYPOS ///////////////////////////////////////
+const [fontsLoaded] = useFonts({
+  'FT88-Regular': require('../assets/fonts/FT88-Regular.ttf')
+}) 
 //L'ensemble des films
 // const [watchList, setWatchList]= useState([])
 //////////////////// END IF STATE COMPONENTS AND VARIABLES /////////////////////////
@@ -133,10 +64,7 @@ const styles = StyleSheet.create({
 //////////////////// FONCTIONS ///////////////////////////////////////////////
 // // ce qui est input
 // const handleChange=(value)=>setInput(value);
-
 /////////////////////////////////// FOR SEARCH ///////////////////////////////////////
-
-
 const searchFilm = (s) => {
   console.log('s',s)  
   const url= `http://www.omdbapi.com/?s=${s}&apikey=348eb517`;
@@ -157,12 +85,15 @@ console.log('results array', results)
 
 const showResult=()=>{
   console.log('results passed to showResult', results)
+ 
   return results.map((result,i) => (
-    <View key={i} style={styles.result}> 
-        <Text style={styles.text}>{result.Title}</Text> 
-        <Image source={{uri:`${result.Poster}`}} resizeMode="cover" /> 
+    <View key={i} style={[styles.result, styles.text]}> 
+        <Text>{result.Title}</Text> 
+        <Text>{result.Year}</Text> 
+        <Text>{result.Type}</Text> 
+        <Image style={styles.image} source={{uri:`${result.Poster}`}} resizeMode="cover" /> 
         <View style={styles.button}><Button onPress={()=>handleSubmit(result.Title)} title="Add to watchlist" color="#841584"/></View>
-    </View> 
+    </View>
     ))} 
 
 // ce qui est submit
@@ -217,7 +148,6 @@ const newMovie = {
           <Image style={styles.image} source={{uri:`${movie.poster}`}}/>
         </View>
         <Button onPress={()=> triggerAlert(i)} title="delete" style={styles.text} />
-          {/* // getDeleted(i) myAlert(i)*/}
         <View style={styles.alert}></View>
       </View>
     }
@@ -254,19 +184,44 @@ const newMovie = {
 ////////////////////////////////////////// FOR RETURN //////////////////////////////////////////
 
   return (
-    <SafeAreaView style={styles.container}>
-    <View>
-      <Text style={styles.heading}>Hello,</Text>
-      <Text style={styles.subHeading}>you have{lengthList}films left</Text>
-    </View>
-    {/* <TextInput style={styles.input} onChangeText={handleChange} value={input}/> */}
-    <TextInput style={styles.searchbox} value={s} onChangeText={(text) => setS(text)}/>
-    <Button style={styles.button} onPress={()=>searchFilm(s)} title="Search" color="#fff"/>
-    {/* The suggestion from search + Triggered quand results a des items */}
-    <ScrollView style={styles.results}>
-      {results.length>0 && showResult()}
-    </ScrollView>
-    {retrievedData.length>0 && showFilm()}
+    <LinearGradient colors={['#b2deff', '#eaf6ff']} style={styles.container}>
+    <SafeAreaView>
+        <View>
+          {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 30, paddingTop: 10, paddingRight: 10, marginTop: 10, marginLeft:20, color:'white'}}>Hello,</Text>}          
+          {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 20, paddingTop: 10, paddingBottom:10, marginBottom: 10, marginLeft:20,color:'white'}}>you have {lengthList} films to see</Text>}
+        </View>
+        {/* <TextInput style={styles.input} onChangeText={handleChange} value={input}/> */}
+        <View  style={styles.searchContainer}>
+            <TextInput style={styles.searchbox} value={s} placeholder="search for a movie" onChangeText={(text) => setS(text)}/>
+            <View style={[styles.addButton, styles.dropShadow]}><Button onPress={()=>searchFilm(s)} title="+" color="grey"/></View>
+        </View>
+        {/* The suggestion from search + Triggered quand results a des items */}
+        <View style={styles.resultsContainer}>
+          <ScrollView style={styles.results}>
+            {results.length>0 && showResult()}
+          </ScrollView>
+          <ScrollView style={styles.results}>
+          {retrievedData.length>0 && showFilm()}
+          </ScrollView>
+        </View>
     </SafeAreaView>
+    </LinearGradient>
   )
 }
+
+const styles = StyleSheet.create({
+  container: container, 
+  input: input, 
+  text: text, 
+  button: button, 
+  image: image,
+  alert: alert, 
+  searchbox: searchbox, 
+  results: results, 
+  result: result,
+  searchContainer: searchContainer,
+  resultsContainer: resultsContainer,
+  addButton:addButton,
+  innerShadow:innerShadow,
+  dropShadow: dropShadow
+})
