@@ -2,10 +2,9 @@ import React, {useState, useEffect} from 'react'
 import {StyleSheet, SafeAreaView, Button, View, Text,TextInput, Image, Alert, ScrollView, ImageBackground } from 'react-native'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {container, searchContainer, input, text, button, image, alert, searchbox, resultView, resultBlock, addButton, innerShadow, dropShadow, headerBlock, addWLBtn} from '../style/style.js';
+import {container, searchContainer, header, input, text, button, image, searchbox, resultBlock, addButton, innerShadow, dropShadow, headerBlock, addWLBtn, dropShadowInput, glassComponent} from '../style/style.js';
 import {useFonts} from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
-
 
 export default function App(){
 //////////////////// USE OF ASYNCSTORAGE /////////////////////////
@@ -84,19 +83,19 @@ const searchFilm = (s) => {
 console.log('results array', results)
 
 const showResult=()=>{
-  console.log('results passed to showResult', results)
-  return results.map((result,i) => (
-    <View key={i} style={styles.image}>
-        <ImageBackground  style={[styles.resultBlock]} imageStyle={{borderRadius: 40, opacity: 0.6}} source={{uri:`${result.Poster}`}}>
-         <View style={styles.headerBlock}>
-          {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'black'}}>{result.Title}</Text>}
-          {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'black'}}>{result.Year}</Text>}
-          {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'black'}}>{result.Type}</Text>}
-          </View>
-          <Button style={[styles.addWLBtn,styles.dropShadow]} onPress={()=>handleSubmit(result.Title)} title="+" color="white"/>
-        </ImageBackground>
-    </View>
-    ))} 
+    console.log('results passed to showResult', results)
+    return results.map((result,i)=>(
+        <View key={i} style={styles.image}>
+            <ImageBackground  style={[styles.resultBlock]} imageStyle={{borderRadius: 40, opacity: 0.3, borderColor: 'lightgrey', borderWidth: 3}} source={{uri:`${result.Poster}`}}>
+            <View style={styles.headerBlock}>
+              {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white'}}>{result.Title}</Text>}
+              {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white'}}>{result.Year}</Text>}
+              {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white'}}>{result.Type}</Text>}
+              </View>
+              <View style={[styles.addButtonSearch, styles.dropShadow]}><Button onPress={()=>handleSubmit(result.Title)} title="+" color="grey"/></View>
+            </ImageBackground>
+        </View>))
+  }
 
 // ce qui est submit
 const handleSubmit=(title)=>{
@@ -139,25 +138,27 @@ const newMovie = {
     }
 
   // Fonction pour afficher les films (DISPLAY)
-  const showFilm =()=>(
-    retrievedData.map((movie,i)=>{
+  const showFilm=()=>(
+     retrievedData.map((movie,i)=>{
       return <View key={i} style={styles.image}>
-        <ImageBackground  style={styles.resultBlock} imageStyle={{borderRadius: 40, opacity: 0.6}} source={{uri:`${movie.poster}`}}>
+        <ImageBackground  style={styles.resultBlock} imageStyle={{borderRadius: 40, opacity: 0.3, borderColor: 'lightgrey', borderWidth: 3}} source={{uri:`${movie.poster}`}}>
         <View style={styles.headerBlock}>
-           {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'black'}}>{movie.title}</Text>}
-           {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'black'}}>{movie.year}</Text>}
-           {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'black'}}>{movie.runtime}</Text>}
-           {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'black'}}>{movie.genre}</Text>}
-           {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'black'}}>{movie.director}</Text>}
+           <View>
+            {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Light', color: 'white', fontSize: 10}}>{movie.genre}</Text>}
+            {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Medium', color: 'white', fontSize: 17, fontWeight: 700}}>{movie.title}</Text>}
+            {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white',fontSize: 12, height: '20%', width: '25%'}}>{movie.director}</Text>}
+           </View>
+           <View style={styles.glassComponent}>
+           {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white'}}>{movie.year}</Text>}
+           {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white'}}>{movie.runtime}</Text>}
+           </View>
         </View>
-        <Button style={[styles.addWLBtn,styles.dropShadow]} onPress={()=> triggerAlert(i)} title="x"/>
-        <View style={styles.alert}></View>   
+        <View style={[styles.addButtonWL, styles.dropShadow]}><Button onPress={()=> triggerAlert(i)} title="x" color='grey'/></View>
         </ImageBackground>
-      </View>
+      </View> 
     }
   ))
-
-           
+     
  
   //Fonction pour récupérer les données de l'api à partir du titre inputed
     const findMovie = async (title) => {
@@ -194,18 +195,17 @@ const newMovie = {
     <SafeAreaView>
         <View>
           {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 30, paddingTop: 10, paddingRight: 10, marginTop: 10, marginLeft:20, color:'white'}}>Hello,</Text>}          
-          {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 15, paddingTop: 10, paddingBottom:10, marginBottom: 10, marginLeft:20,color:'white'}}>you have {lengthList} films in your list</Text>}
+          {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 15, paddingTop: 10, paddingBottom:10, marginBottom: 10, marginLeft:20,color:'white'}}>{ lengthList<=1 ? `you have ${lengthList} film in your list` : `you have ${lengthList} films in your list` }</Text>}
         </View>
-        {/* <TextInput style={styles.input} onChangeText={handleChange} value={input}/> */}
         <View  style={styles.searchContainer}>
-        {fontsLoaded && <TextInput style={[styles.searchbox, { fontFamily: 'Montserrat-Light' }]} value={s} placeholder="search for a movie" onChangeText={(text) => setS(text)}/>}
-            <View style={[styles.addButton, styles.dropShadow]}><Button onPress={()=>searchFilm(s)} title="+" color="grey"/></View>
+        {fontsLoaded && <TextInput style={[styles.searchbox, styles.dropShadowInput, { fontFamily: 'Montserrat-Light' }]} value={s} placeholder="search for a movie" onChangeText={(text) => setS(text)}/>}
+        <View style={[styles.addButtonInput, styles.dropShadow]}><Button onPress={()=>searchFilm(s)} title="+" color="grey"/></View>
         </View>
         {/* The suggestion from search + Triggered quand results a des items */}
-          <ScrollView style={styles.resultView}>
-            {results.length>0 && showResult()}
-          </ScrollView>
-          <ScrollView style={styles.resultView}>
+          <ScrollView>
+          {results.length>0 && <Text style={[styles.header, {fontFamily: 'FT88-Regular', color: 'white'}]}>Matched results</Text>}  
+          {results.length>0 && showResult()}
+          {retrievedData.length>0 && <Text style={[styles.header, {fontFamily: 'FT88-Regular', color: 'white'}]}>My watchlist</Text>}  
           {retrievedData.length>0 && showFilm()}
           </ScrollView>
     </SafeAreaView>
@@ -215,18 +215,22 @@ const newMovie = {
 
 const styles = StyleSheet.create({
   container: container, 
+  header: header,
   input: input, 
   text: text, 
   button: button, 
   image: image,
-  alert: alert, 
   searchbox: searchbox, 
-  resultView: resultView, 
   resultBlock: resultBlock,
   searchContainer: searchContainer,
   addButton:addButton,
   innerShadow:innerShadow,
   dropShadow: dropShadow,
   headerBlock: headerBlock,
-  addWLBtn:addWLBtn
+  addWLBtn:addWLBtn,
+  dropShadowInput:dropShadowInput,
+  addButtonInput: {...addButton, right:55},
+  addButtonSearch: {...addButton, right: 50, bottom:2, },
+  addButtonWL: {...addButton, right: 50, bottom:43, height: 22, width: 22, borderWidth: 3, borderColor:'#5072A7' },
+  glassComponent: glassComponent
 })
