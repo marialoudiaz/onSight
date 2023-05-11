@@ -1,13 +1,10 @@
 import React, {useState, useEffect} from 'react'
-import {StyleSheet, SafeAreaView, Button, View, Text,TextInput, Image, Alert, ScrollView } from 'react-native'
+import {StyleSheet, SafeAreaView, Button, View, Text,TextInput, Image, Alert, ScrollView, ImageBackground } from 'react-native'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {container, searchContainer, resultsContainer, input, text, button, image, alert, searchbox, results, result, addButton, innerShadow, dropShadow} from '../style/style.js';
+import {container, searchContainer, input, text, button, image, alert, searchbox, resultView, resultBlock, addButton, innerShadow, dropShadow, headerBlock, addWLBtn} from '../style/style.js';
 import {useFonts} from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as Font from 'expo-font';
-import InsetShadow from "react-native-inset-shadow";
-
 
 
 export default function App(){
@@ -55,7 +52,10 @@ const myAlert =(i)=>{
 
 ///////////////////// TYPOS ///////////////////////////////////////
 const [fontsLoaded] = useFonts({
-  'FT88-Regular': require('../assets/fonts/FT88-Regular.ttf')
+  'FT88-Regular': require('../assets/fonts/FT88-Regular.ttf'),
+  'Montserrat-Regular' : require('../assets/fonts/Montserrat-Regular.ttf'),
+  'Montserrat-Light' : require('../assets/fonts/Montserrat-Light.ttf'),
+  'Montserrat-Medium' : require('../assets/fonts/Montserrat-Medium.ttf')
 }) 
 //L'ensemble des films
 // const [watchList, setWatchList]= useState([])
@@ -70,14 +70,14 @@ const searchFilm = (s) => {
   const url= `http://www.omdbapi.com/?s=${s}&apikey=348eb517`;
   axios(url).then(({ data }) => {
     console.log('data',data)
-    if (!data.Response){
-      setError('Movie not found')
-    } else{
+    if (data.Response==="True"){
       // chaque object.search envoyé dans setResults en tant qu'object 
       console.log('data Search', data.Search)
-      // Change l'état de results à l'array des recherches trouvées
+    //   // Change l'état de results à l'array des recherches trouvées
       let newResults = data.Search
       setResults(newResults); 
+    } else{
+       setError('Movie not found')
     }
   }); 
 }; 
@@ -85,14 +85,16 @@ console.log('results array', results)
 
 const showResult=()=>{
   console.log('results passed to showResult', results)
- 
   return results.map((result,i) => (
-    <View key={i} style={[styles.result, styles.text]}> 
-        <Text>{result.Title}</Text> 
-        <Text>{result.Year}</Text> 
-        <Text>{result.Type}</Text> 
-        <Image style={styles.image} source={{uri:`${result.Poster}`}} resizeMode="cover" /> 
-        <View style={styles.button}><Button onPress={()=>handleSubmit(result.Title)} title="Add to watchlist" color="#841584"/></View>
+    <View key={i} style={styles.image}>
+        <ImageBackground  style={[styles.resultBlock]} imageStyle={{borderRadius: 40, opacity: 0.6}} source={{uri:`${result.Poster}`}}>
+         <View style={styles.headerBlock}>
+          {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'black'}}>{result.Title}</Text>}
+          {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'black'}}>{result.Year}</Text>}
+          {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'black'}}>{result.Type}</Text>}
+          </View>
+          <Button style={[styles.addWLBtn,styles.dropShadow]} onPress={()=>handleSubmit(result.Title)} title="+" color="white"/>
+        </ImageBackground>
     </View>
     ))} 
 
@@ -114,6 +116,7 @@ const newMovie = {
       director: Director,
       poster: Poster
     };
+    console.log('setData', setData([...data, newMovie]))
     setData([...data, newMovie]); // au lieu de watchList
     setMovie({
       title:'',
@@ -138,21 +141,24 @@ const newMovie = {
   // Fonction pour afficher les films (DISPLAY)
   const showFilm =()=>(
     retrievedData.map((movie,i)=>{
-      return <View key={i}>
-        <View style={styles.text}>
-          <Text>{movie.title}</Text>
-          <Text>{movie.year}</Text>
-          <Text>{movie.runtime}</Text>
-          <Text>{movie.genre}</Text>
-          <Text>{movie.director}</Text>
-          <Image style={styles.image} source={{uri:`${movie.poster}`}}/>
+      return <View key={i} style={styles.image}>
+        <ImageBackground  style={styles.resultBlock} imageStyle={{borderRadius: 40, opacity: 0.6}} source={{uri:`${movie.poster}`}}>
+        <View style={styles.headerBlock}>
+           {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'black'}}>{movie.title}</Text>}
+           {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'black'}}>{movie.year}</Text>}
+           {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'black'}}>{movie.runtime}</Text>}
+           {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'black'}}>{movie.genre}</Text>}
+           {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'black'}}>{movie.director}</Text>}
         </View>
-        <Button onPress={()=> triggerAlert(i)} title="delete" style={styles.text} />
-        <View style={styles.alert}></View>
+        <Button style={[styles.addWLBtn,styles.dropShadow]} onPress={()=> triggerAlert(i)} title="x"/>
+        <View style={styles.alert}></View>   
+        </ImageBackground>
       </View>
     }
   ))
 
+           
+ 
   //Fonction pour récupérer les données de l'api à partir du titre inputed
     const findMovie = async (title) => {
       const url= `http://www.omdbapi.com/?t=${title}&apikey=348eb517`
@@ -184,26 +190,24 @@ const newMovie = {
 ////////////////////////////////////////// FOR RETURN //////////////////////////////////////////
 
   return (
-    <LinearGradient colors={['#b2deff', '#eaf6ff']} style={styles.container}>
+    <LinearGradient colors={['#192b87', '#5dbdf5']} style={styles.container}>
     <SafeAreaView>
         <View>
           {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 30, paddingTop: 10, paddingRight: 10, marginTop: 10, marginLeft:20, color:'white'}}>Hello,</Text>}          
-          {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 20, paddingTop: 10, paddingBottom:10, marginBottom: 10, marginLeft:20,color:'white'}}>you have {lengthList} films to see</Text>}
+          {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 15, paddingTop: 10, paddingBottom:10, marginBottom: 10, marginLeft:20,color:'white'}}>you have {lengthList} films in your list</Text>}
         </View>
         {/* <TextInput style={styles.input} onChangeText={handleChange} value={input}/> */}
         <View  style={styles.searchContainer}>
-            <TextInput style={styles.searchbox} value={s} placeholder="search for a movie" onChangeText={(text) => setS(text)}/>
+        {fontsLoaded && <TextInput style={[styles.searchbox, { fontFamily: 'Montserrat-Light' }]} value={s} placeholder="search for a movie" onChangeText={(text) => setS(text)}/>}
             <View style={[styles.addButton, styles.dropShadow]}><Button onPress={()=>searchFilm(s)} title="+" color="grey"/></View>
         </View>
         {/* The suggestion from search + Triggered quand results a des items */}
-        <View style={styles.resultsContainer}>
-          <ScrollView style={styles.results}>
+          <ScrollView style={styles.resultView}>
             {results.length>0 && showResult()}
           </ScrollView>
-          <ScrollView style={styles.results}>
+          <ScrollView style={styles.resultView}>
           {retrievedData.length>0 && showFilm()}
           </ScrollView>
-        </View>
     </SafeAreaView>
     </LinearGradient>
   )
@@ -217,11 +221,12 @@ const styles = StyleSheet.create({
   image: image,
   alert: alert, 
   searchbox: searchbox, 
-  results: results, 
-  result: result,
+  resultView: resultView, 
+  resultBlock: resultBlock,
   searchContainer: searchContainer,
-  resultsContainer: resultsContainer,
   addButton:addButton,
   innerShadow:innerShadow,
-  dropShadow: dropShadow
+  dropShadow: dropShadow,
+  headerBlock: headerBlock,
+  addWLBtn:addWLBtn
 })

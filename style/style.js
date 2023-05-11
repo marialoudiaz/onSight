@@ -6,8 +6,20 @@
 
   text={
     fontSize:15,
-    backgroundColor: 'gray',
     color:'black',
+    backgroundColor: 'rgba(255,255,255,0.8)'
+  }
+
+  image={
+    borderRadius:50
+  }
+
+  alert={
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'red',
   }
 
   input={
@@ -17,6 +29,7 @@
     width:'70%',
     borderWidth: 1  
   }
+  ////////////////////////////////////////////// SEARCHBOX ////////////////////////////////////////////////
 
   searchContainer={
     flex:1,
@@ -25,9 +38,9 @@
     alignItems: 'center',
     marginTop: 30,
     marginLeft: 10,
-    marginRight: 10,
+    marginBottom: 30,
     paddingLeft: 25,
-    paddingRight: 25
+    paddingRight: 10
   }
 
   searchbox={
@@ -37,8 +50,6 @@
     height: 60,
     backgroundColor: '#FFF',
     borderRadius: 30,
-    marginLeft: 5,
-    marginRight: 10,
   }
   dropShadow= {
     shadowColor: '#171717',
@@ -52,24 +63,7 @@
     shadowRadius:20
   }
 
-  addButton={
-  borderRadius: 80,
-  backgroundColor: 'white',
-  height: 40,
-  width: 40,
-  right: 60
-  }
-
-  resultsContainer={
-    flex: 2,
-  }
-  results={
-    backgroundColor: '#FFF',
-  }
-  
-  result={
-    width:'80%',      
-  }
+  ////////////////////////////////////////////// BUTTONS ////////////////////////////////////////////////
 
   button={
     height: 40,
@@ -80,20 +74,45 @@
     borderRadius: 20,
     backgroundColor: 'white'
   }
-
-  image={
-    minWidth: 60, 
-    minHeight: 60, 
-    marginBottom:10,
+  
+  addButton={
+  borderRadius: 80,
+  backgroundColor: 'white',
+  height: 40,
+  width: 40,
+  right: 55
   }
 
-  alert={
-    flex: 1,
-    backgroundColor: '#fff',
+  addWLBtn={
+  borderRadius: 80,
+  backgroundColor: 'black',
+  height: 40,
+  width: 40
+  }
+
+  ////////////////////////////////////////////// BLOCKS ////////////////////////////////////////////////
+
+  resultView={
+    color:'white'
+  }
+  
+  resultBlock={
+    flexDirection: 'row',
+    width: '95%', 
+    justifyContent: 'space-evenly',
     alignItems: 'center',
-    justifyContent: 'center',
-    color: 'red',
+    margin: 9,
+    paddingTop:10,
+    paddingBottom: 10,
+    borderRadius: 40,
   }
+
+  headerBlock={
+    alignItems: 'flex-start',
+  }
+
+  
+
 
 module.exports={
   container, 
@@ -103,11 +122,11 @@ module.exports={
   image,
   alert, 
   searchbox, 
-  results, 
-  result,
+  resultView, 
+  resultBlock,
   searchContainer,
-  resultsContainer,
   addButton,
   innerShadow,
-  dropShadow
+  dropShadow,
+  addWLBtn
   }
