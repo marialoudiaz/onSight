@@ -52,6 +52,7 @@ const myAlert =(i)=>{
 ///////////////////// TYPOS ///////////////////////////////////////
 const [fontsLoaded] = useFonts({
   'FT88-Regular': require('../assets/fonts/FT88-Regular.ttf'),
+  'FT88-Serif': require('../assets/fonts/FT88-Serif.ttf'),
   'Montserrat-Regular' : require('../assets/fonts/Montserrat-Regular.ttf'),
   'Montserrat-Light' : require('../assets/fonts/Montserrat-Light.ttf'),
   'Montserrat-Medium' : require('../assets/fonts/Montserrat-Medium.ttf')
@@ -145,7 +146,7 @@ const newMovie = {
         <View style={styles.headerBlock}>
            <View>
             {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Light', color: 'white', fontSize: 10}}>{movie.genre}</Text>}
-            {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Medium', color: 'white', fontSize: 17, fontWeight: 700}}>{movie.title}</Text>}
+            {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Medium', color: 'white', fontSize: 20, fontWeight: 700}}>{movie.title}</Text>}
             {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white',fontSize: 12, height: '20%', width: '25%'}}>{movie.director}</Text>}
            </View>
            <View style={styles.glassComponent}>
@@ -194,8 +195,8 @@ const newMovie = {
     <LinearGradient colors={['#192b87', '#5dbdf5']} style={styles.container}>
     <SafeAreaView>
         <View>
-          {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 30, paddingTop: 10, paddingRight: 10, marginTop: 10, marginLeft:20, color:'white'}}>Hello,</Text>}          
-          {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 15, paddingTop: 10, paddingBottom:10, marginBottom: 10, marginLeft:20,color:'white'}}>{ lengthList<=1 ? `you have ${lengthList} film in your list` : `you have ${lengthList} films in your list` }</Text>}
+          {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 50, paddingTop: 10, paddingRight: 10, marginTop: 10, marginLeft:20, color:'white'}}>Hello,</Text>}          
+          {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 15, paddingTop: 10, paddingBottom:10, marginBottom: 10, marginLeft:20,color:'white'}}>{ lengthList<=1 ? `you have ${lengthList} film to watch` : `you have ${lengthList} films to watch` }</Text>}
         </View>
         <View  style={styles.searchContainer}>
         {fontsLoaded && <TextInput style={[styles.searchbox, styles.dropShadowInput, { fontFamily: 'Montserrat-Light' }]} value={s} placeholder="search for a movie" onChangeText={(text) => setS(text)}/>}
@@ -203,9 +204,9 @@ const newMovie = {
         </View>
         {/* The suggestion from search + Triggered quand results a des items */}
           <ScrollView>
-          {results.length>0 && <Text style={[styles.header, {fontFamily: 'FT88-Regular', color: 'white'}]}>Matched results</Text>}  
+          {results.length>0 && <Text style={[styles.header, {fontFamily: 'FT88-Serif', color: 'white'}]}>Matched results</Text>}  
           {results.length>0 && showResult()}
-          {retrievedData.length>0 && <Text style={[styles.header, {fontFamily: 'FT88-Regular', color: 'white'}]}>My watchlist</Text>}  
+          {retrievedData.length>0 && <Text style={[styles.header, {fontFamily: 'FT88-Serif', color: 'white'}]}>My watchlist</Text>}  
           {retrievedData.length>0 && showFilm()}
           </ScrollView>
     </SafeAreaView>

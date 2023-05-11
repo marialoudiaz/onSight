@@ -26,7 +26,7 @@
   header={
     marginLeft: 20,
     marginTop: 15,
-    fontSize: 15
+    fontSize: 18
   }
   ////////////////////////////////////////////// SEARCHBOX ////////////////////////////////////////////////
 
@@ -37,7 +37,7 @@
     alignItems: 'center',
     marginTop: 30,
     marginLeft: 10,
-    marginBottom: 30,
+    marginBottom: 50,
     paddingLeft: 25,
     paddingRight: 10
   }
