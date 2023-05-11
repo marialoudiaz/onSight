@@ -12,7 +12,6 @@
 
   image={
     borderRadius:50,
- 
   }
 
   input={
@@ -78,7 +77,6 @@
     height: 40,
     width:'100%', 
     borderColor: 'gray', 
-    width:'70%',
     borderWidth: 1 ,
     borderRadius: 20,
     backgroundColor: 'white'
@@ -106,27 +104,29 @@
     justifyContent:"space-between",
     alignItems: 'center',
     margin: 9,
-    paddingTop:10,
+    paddingTop:15,
     paddingLeft: 25,
     paddingBottom: 10,
     borderRadius: 40,
   }
 
   headerBlock={
-  
   }
 
   glassComponent={
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'center',
-  backgroundColor: 'white',
+  width: '73%',
   borderRadius: 20,
-  padding: 20,
+  paddingTop: 20,
+  paddingBottom: 20,
+  paddingLeft:15,
+  paddingRight:15,
   margin: 4,
   borderWidth: 3,
   borderColor: 'rgba(255, 255, 255, 0.23)',
-  blurRadius: 5
+  overflow: 'hidden'
   }
 
 

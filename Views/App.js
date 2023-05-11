@@ -5,6 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {container, searchContainer, header, input, text, button, image, searchbox, resultBlock, addButton, innerShadow, dropShadow, headerBlock, addWLBtn, dropShadowInput, glassComponent} from '../style/style.js';
 import {useFonts} from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
+
 
 export default function App(){
 //////////////////// USE OF ASYNCSTORAGE /////////////////////////
@@ -55,7 +57,8 @@ const [fontsLoaded] = useFonts({
   'FT88-Serif': require('../assets/fonts/FT88-Serif.ttf'),
   'Montserrat-Regular' : require('../assets/fonts/Montserrat-Regular.ttf'),
   'Montserrat-Light' : require('../assets/fonts/Montserrat-Light.ttf'),
-  'Montserrat-Medium' : require('../assets/fonts/Montserrat-Medium.ttf')
+  'Montserrat-Medium' : require('../assets/fonts/Montserrat-Medium.ttf'),
+  'Montserrat-SemiBold' : require('../assets/fonts/Montserrat-SemiBold.ttf')
 }) 
 //L'ensemble des films
 // const [watchList, setWatchList]= useState([])
@@ -85,17 +88,17 @@ console.log('results array', results)
 
 const showResult=()=>{
     console.log('results passed to showResult', results)
-    return results.map((result,i)=>(
-        <View key={i} style={styles.image}>
-            <ImageBackground  style={[styles.resultBlock]} imageStyle={{borderRadius: 40, opacity: 0.3, borderColor: 'lightgrey', borderWidth: 3}} source={{uri:`${result.Poster}`}}>
+     results.map((result,i)=>{
+        return <View key={i} style={styles.image}>
+            <ImageBackground  style={styles.resultBlock} imageStyle={{borderRadius: 40, opacity: 0.3, borderColor: 'lightgrey', borderWidth: 3}} source={{uri:`${result.Poster}`}}>
             <View style={styles.headerBlock}>
-              {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white'}}>{result.Title}</Text>}
-              {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white'}}>{result.Year}</Text>}
-              {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white'}}>{result.Type}</Text>}
+              {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 18}}>{result.Title}</Text>}
+              {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 10}}>{result.Type}</Text>}
+              {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 9}}>{result.Year}</Text>}
               </View>
               <View style={[styles.addButtonSearch, styles.dropShadow]}><Button onPress={()=>handleSubmit(result.Title)} title="+" color="grey"/></View>
             </ImageBackground>
-        </View>))
+        </View>})
   }
 
 // ce qui est submit
@@ -141,17 +144,22 @@ const newMovie = {
   // Fonction pour afficher les films (DISPLAY)
   const showFilm=()=>(
      retrievedData.map((movie,i)=>{
-      return <View key={i} style={styles.image}>
-        <ImageBackground  style={styles.resultBlock} imageStyle={{borderRadius: 40, opacity: 0.3, borderColor: 'lightgrey', borderWidth: 3}} source={{uri:`${movie.poster}`}}>
-        <View style={styles.headerBlock}>
+      {/*DISPLAY DOTS IF TOO LONG*/}
+      const truncatedDirector = movie.director.length > 15 ? movie.director.substring(0, 10) + "..." : movie.director;
+      const truncatedTitle = movie.title.length > 15 ? movie.title.substring(0, 10) + "..." : movie.title;
+      return <View key={i}>
+        <ImageBackground  style={[styles.resultBlockWatch]} imageStyle={{borderRadius: 40, opacity: 0.3, borderColor: 'lightgrey', borderWidth: 3}} source={{uri:`${movie.poster}`}}>
+        <View style={[styles.headerBlock]}>
            <View>
             {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Light', color: 'white', fontSize: 10}}>{movie.genre}</Text>}
-            {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Medium', color: 'white', fontSize: 20, fontWeight: 700}}>{movie.title}</Text>}
-            {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white',fontSize: 12, height: '20%', width: '25%'}}>{movie.director}</Text>}
+            {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Medium', color: 'white', fontSize: 20, fontWeight: 700}}>{truncatedTitle}</Text>}
+            {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white',fontSize: 12}}>{truncatedDirector}</Text>}
            </View>
-           <View style={styles.glassComponent}>
-           {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white'}}>{movie.year}</Text>}
-           {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white'}}>{movie.runtime}</Text>}
+           <View>
+           <BlurView blurType={"light"} blurAmount={50} reducedTransparencyFallbackColor="rgba(37,42,54,.25)" style={[styles.glassComponent]}>
+           {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-SemiBold', color: 'white'}}>{movie.year}</Text>}
+           {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-SemiBold', color: 'white'}}>{movie.runtime}</Text>}
+           </BlurView>
            </View>
         </View>
         <View style={[styles.addButtonWL, styles.dropShadow]}><Button onPress={()=> triggerAlert(i)} title="x" color='grey'/></View>
@@ -233,5 +241,6 @@ const styles = StyleSheet.create({
   addButtonInput: {...addButton, right:55},
   addButtonSearch: {...addButton, right: 50, bottom:2, },
   addButtonWL: {...addButton, right: 50, bottom:43, height: 22, width: 22, borderWidth: 3, borderColor:'#5072A7' },
-  glassComponent: glassComponent
+  glassComponent: glassComponent,
+  resultBlockWatch: {...resultBlock, flex:1}
 })
