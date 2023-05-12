@@ -6,6 +6,9 @@ import {container, searchContainer, header, headerinput, text, button, image, se
 import {useFonts} from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
+import * as Svg from 'react-native-svg';
+import Icon from 'react-native-vector-icons/FontAwesome'
+
 
 
 export default function App(){
@@ -37,14 +40,13 @@ const _retrieveData = async () => {
 //////////////////// END OF ASYNCSTORAGE /////////////////////////
 
 
-
 //////////////////// STATE COMPONENTS AND VARIABLES /////////////////////////
 //length of watchList
 const [lengthList, setLengthList]=useState(0)
 // Les données de l'api
-const [movie, setMovie]= useState({title:'',year:'',runtime:'',genre:'',director:'', poster:''})
+// const [movie, setMovie]= useState({title:'',year:'',runtime:'',genre:'',director:'', poster:''})
 //state component pour l'input
-const [input, setInput]=useState('')
+// const [input, setInput]=useState('')
 // State component for error
 const [error, setError]=useState('')
 const [s, setS] = useState(''); 
@@ -59,9 +61,6 @@ const [fontsLoaded] = useFonts({
   'Montserrat-SemiBold' : require('../assets/fonts/Montserrat-SemiBold.ttf')
 }) 
 //////////////////// END IF STATE COMPONENTS AND VARIABLES /////////////////////////
-
-
-
 
 
 //////////////////// FONCTIONS ///////////////////////////////////////////////
@@ -122,8 +121,6 @@ const showResult=()=>{
       let {Title, Year, Runtime, Genre, Director, Poster} = res.data;
       console.log(res.data)
       console.log(81,{title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster})
-      // Destructure l'objet reçu
-    // setMovie({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster});
       // trigger addToWatchList
       addToWatchList({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster})
     }catch (error) {
@@ -142,22 +139,20 @@ const showResult=()=>{
           poster: Poster
         };
         setData([...data, newMovie]); // au lieu de watchList
-        setMovie({
-          title:'',
-          year:'',
-          runtime:'',
-          genre:'',
-          director:'',
-          poster:''
-        });
   };
   console.log('setData', data)
+
       // une fois que data est assigné 
       useEffect(()=>{
         if(data.length > 0){
-          _storeData(data); // une fois data ajoutés au component data, je lance la fonction _storeData
-          _retrieveData()
+          _storeData(); // une fois data ajoutés au component data, je lance la fonction _storeData
+          // _retrieveData()
       }},[data])
+
+      // Will trigger only once : when opening the app
+      useEffect(()=>{
+        _retrieveData()
+      },[])
 
   // Fonction pour supprimer un film de la liste  (DELETE)
     const triggerAlert=(i)=>{myAlert(i)}
@@ -175,7 +170,10 @@ const showResult=()=>{
     if (storedData) {
       const retrievedData = JSON.parse(storedData); // Parse the stored JSON data into an array
       retrievedData.splice(i, 1); // Remove the item at the specified index
-      await AsyncStorage.setItem('item', JSON.stringify(retrievedData)); // Save the updated array back to AsyncStorage
+      const set = await AsyncStorage.setItem('item', JSON.stringify(retrievedData)); // Save the updated array back to AsyncStorage
+      setData(retrievedData)
+      // setRetrievedData(retrievedData);
+      console.log('set',set)
       console.log('Data removed and updated in AsyncStorage.');
     } else {
       console.log('No data found in AsyncStorage.');
@@ -187,7 +185,7 @@ const showResult=()=>{
 
   // Fonction pour afficher les films (DISPLAY)
   const showFilm=()=>(
-     retrievedData.map((movie,i)=>{
+     data.map((movie,i)=>{
       {/*DISPLAY DOTS IF TOO LONG*/}
       const truncatedDirector = movie.director.length > 15 ? movie.director.substring(0, 10) + "..." : movie.director;
       const truncatedTitle = movie.title.length > 15 ? movie.title.substring(0, 10) + "..." : movie.title;
@@ -206,10 +204,10 @@ const showResult=()=>{
            </BlurView>
            </View>
         </View>
-        <View style={[styles.addButtonWL, styles.dropShadow, {position: 'absolute', right:60}]}><Button onPress={()=> triggerAlert(i)} title="x" color='grey'/></View>
+        <View style={[ {position: 'absolute', top:10,right:55}]}><Icon name="remove" size={20} color='white'onPress={()=> triggerAlert(i)}/></View>
         </ImageBackground>
       </View> 
-    }
+     }
   ))
      
 
@@ -238,7 +236,7 @@ const showResult=()=>{
           <ScrollView>
           {results.length>0 && <Text style={[styles.header, {fontFamily: 'FT88-Serif', color: 'white'}]}>Matched results</Text>}  
           {results.length>0 && showResult()}
-          {retrievedData.length>0 && <Text style={[styles.header, {fontFamily: 'FT88-Serif', color: 'white'}]}>My watchlist</Text>}  
+          {data.length>0 && <Text style={[styles.header, {fontFamily: 'FT88-Serif', color: 'white'}]}>My watchlist</Text>}  
           {data.length>0 && showFilm()}
           </ScrollView>
     </SafeAreaView>
@@ -263,7 +261,7 @@ const styles = StyleSheet.create({
   dropShadowInput:dropShadowInput,
   addButtonInput: {...addButton, right:55},
   addButtonSearch: {...addButton, bottom:2, position: 'absolute',left:280, bottom:21},
-  addButtonWL: {...addButton, right:10, height:40, width: 40, borderWidth: 3, borderColor:'#5072A7' },
+  addButtonWL: {...addButton, height:60, width: 60, borderWidth: 3, borderColor:'#5072A7' },
   glassComponent: glassComponent,
   resultBlockWatch: {...resultBlock, flex:1},
   resultBlockSearch: {...resultBlock, gap:50}
