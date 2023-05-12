@@ -49,7 +49,6 @@
     borderRadius: 60,
     paddingHorizontal: 20,
     paddingVertical: 8,
-    boxShadow: '0px 4px #dfd9d9',
   }
 
   dropShadowInput={
@@ -93,7 +92,7 @@
   borderRadius: 80,
   backgroundColor: 'transparent',
   height: 40,
-  width: 40
+  width: 40,
   }
 
   ////////////////////////////////////////////// BLOCKS ////////////////////////////////////////////////
@@ -101,8 +100,7 @@
   resultBlock={
     flexDirection: 'row',
     width: '99%', 
-    justifyContent:"space-between",
-    alignItems: 'center',
+    justifyContent: 'flex-start',
     margin: 9,
     paddingTop:15,
     paddingLeft: 25,
@@ -110,8 +108,6 @@
     borderRadius: 40,
   }
 
-  headerBlock={
-  }
 
   glassComponent={
   flexDirection: 'row',

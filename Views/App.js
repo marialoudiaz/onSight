@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react'
 import {StyleSheet, SafeAreaView, Button, View, Text,TextInput, Image, Alert, ScrollView, ImageBackground } from 'react-native'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {container, searchContainer, header, input, text, button, image, searchbox, resultBlock, addButton, innerShadow, dropShadow, headerBlock, addWLBtn, dropShadowInput, glassComponent} from '../style/style.js';
+import {container, searchContainer, header, headerinput, text, button, image, searchbox, resultBlock, addButton, innerShadow, dropShadow, addWLBtn, dropShadowInput, glassComponent} from '../style/style.js';
 import {useFonts} from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -13,12 +13,12 @@ export default function App(){
 // the data to store (items)
 const [data, setData]=useState([])
 const [retrievedData, setRetrievedData]=useState([])
-
 // send each item created to the storage
-const _storeData = async () => {
+const _storeData = async (data) => {
   try {
     // we need to stringify our array into a string
-    await AsyncStorage.setItem('item', JSON.stringify(data) );
+    const set = await AsyncStorage.setItem('item', JSON.stringify(data) );
+    console.log('set',set)
   } catch (error){
   }
 };
@@ -26,13 +26,16 @@ const _storeData = async () => {
 const _retrieveData = async () => {
   try {
     const value = await AsyncStorage.getItem('item');
+    console.log('value',value)
     let bringBackToArray= JSON.parse(value)
+    console.log('parsedvalue', bringBackToArray)
     setRetrievedData(bringBackToArray)
 // now we have data restored from asyncStorage parsed back into an array which we can use
 } catch (error) {
 }
 };
 //////////////////// END OF ASYNCSTORAGE /////////////////////////
+
 
 
 //////////////////// STATE COMPONENTS AND VARIABLES /////////////////////////
@@ -46,11 +49,6 @@ const [input, setInput]=useState('')
 const [error, setError]=useState('')
 const [s, setS] = useState(''); 
 const [results, setResults] = useState([]); 
-const myAlert =(i)=>{
-  Alert.alert('Reset Data','Are you sure you want to delete this movie from the list ?',
-    [{text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'}, {text: 'OK', onPress: () => getDeleted(i) },],{cancelable: false})
-}
-
 ///////////////////// TYPOS ///////////////////////////////////////
 const [fontsLoaded] = useFonts({
   'FT88-Regular': require('../assets/fonts/FT88-Regular.ttf'),
@@ -60,9 +58,11 @@ const [fontsLoaded] = useFonts({
   'Montserrat-Medium' : require('../assets/fonts/Montserrat-Medium.ttf'),
   'Montserrat-SemiBold' : require('../assets/fonts/Montserrat-SemiBold.ttf')
 }) 
-//L'ensemble des films
-// const [watchList, setWatchList]= useState([])
 //////////////////// END IF STATE COMPONENTS AND VARIABLES /////////////////////////
+
+
+
+
 
 //////////////////// FONCTIONS ///////////////////////////////////////////////
 // // ce qui est input
@@ -88,58 +88,102 @@ console.log('results array', results)
 
 const showResult=()=>{
     console.log('results passed to showResult', results)
-     results.map((result,i)=>{
-        return <View key={i} style={styles.image}>
-            <ImageBackground  style={styles.resultBlock} imageStyle={{borderRadius: 40, opacity: 0.3, borderColor: 'lightgrey', borderWidth: 3}} source={{uri:`${result.Poster}`}}>
+     return results.map((result,i)=>{
+        return (
+        <View key={i} style={styles.image}>
+            <ImageBackground  style={styles.resultBlockSearch} imageStyle={{borderRadius: 40, opacity: 0.3, borderColor: 'lightgrey', borderWidth: 3}} source={{uri:`${result.Poster}`}}>
             <View style={styles.headerBlock}>
               {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 18}}>{result.Title}</Text>}
-              {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 10}}>{result.Type}</Text>}
-              {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 9}}>{result.Year}</Text>}
+              {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 10, padding:2}}>{result.Type}</Text>}
+              {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 9, padding:2}}>{result.Year}</Text>}
               </View>
-              <View style={[styles.addButtonSearch, styles.dropShadow]}><Button onPress={()=>handleSubmit(result.Title)} title="+" color="grey"/></View>
+              <View style={[styles.addButtonSearch, styles.dropShadow]}><Button onPress={()=>handleSubmit(result.imdbID)} title="+" color="grey"/></View>
             </ImageBackground>
-        </View>})
+        </View>
+        )
+      })
   }
 
-// ce qui est submit
-const handleSubmit=(title)=>{
-  console.log('title',title)
-  setInput(title);
-  setResults([])
-  findMovie(title)
-};
-/////////////////////////////////// FOR WATCHLIST ///////////////////////////////////////
-
-const addToWatchList = ({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster}) => {
-const newMovie = {
-      title: Title,
-      year: Year,
-      runtime: Runtime,
-      genre: Genre,
-      director: Director,
-      poster: Poster
-    };
-    console.log('setData', setData([...data, newMovie]))
-    setData([...data, newMovie]); // au lieu de watchList
-    setMovie({
-      title:'',
-      year:'',
-      runtime:'',
-      genre:'',
-      director:'',
-      poster:''
-    });
-    _storeData(); // une fois data ajoutés au component data, je lance la fonction _storeData
-    _retrieveData()
+  // ce qui est submit
+  const handleSubmit=(id)=>{
+    console.log('id',id)
+    setResults([])
+    findMovie(id)
   };
- 
-  // Fonction pour supprimer un film de la liste  (DELETE)
-    const triggerAlert=(i)=>{myAlert(i)}  
-    const getDeleted =(i)=>{
-      const temp = [...retrievedData]
-      temp.splice(i,1)
-      setRetrievedData([...temp])
+
+  /////////////////////////////////// FOR WATCHLIST ///////////////////////////////////////
+  //Fonction pour récupérer les données de l'api à partir du titre inputed
+  const findMovie = async (id) => {
+    const url= `http://www.omdbapi.com/?i=${id}&apikey=348eb517`
+    try {
+      const res = await axios.get(url);
+      console.log('res',res)
+      // if response is true 
+      let {Title, Year, Runtime, Genre, Director, Poster} = res.data;
+      console.log(res.data)
+      console.log(81,{title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster})
+      // Destructure l'objet reçu
+    // setMovie({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster});
+      // trigger addToWatchList
+      addToWatchList({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster})
+    }catch (error) {
+    setError(error.message); 
     }
+  };
+
+
+  const addToWatchList = ({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster}) => {
+    const newMovie = {
+          title: Title,
+          year: Year,
+          runtime: Runtime,
+          genre: Genre,
+          director: Director,
+          poster: Poster
+        };
+        setData([...data, newMovie]); // au lieu de watchList
+        setMovie({
+          title:'',
+          year:'',
+          runtime:'',
+          genre:'',
+          director:'',
+          poster:''
+        });
+  };
+  console.log('setData', data)
+      // une fois que data est assigné 
+      useEffect(()=>{
+        if(data.length > 0){
+          _storeData(data); // une fois data ajoutés au component data, je lance la fonction _storeData
+          _retrieveData()
+      }},[data])
+
+  // Fonction pour supprimer un film de la liste  (DELETE)
+    const triggerAlert=(i)=>{myAlert(i)}
+    const myAlert =(i)=>{
+      Alert.alert('Reset Data','Are you sure you want to delete this movie from the list ?',
+        [{text: 'Cancel', onPress:()=> console.log('Cancel Pressed'), style: 'cancel'}, {text: 'OK', onPress:()=>removeValue(i) },],{cancelable: false})
+    }  
+    // I = INDEX OF ELEMENT TO DELETE IN THE ARRAY
+   // called after myAlert  
+    const removeValue = async (i)=>{
+      console.log('i', i)
+    try {
+      const storedData = await AsyncStorage.getItem('item') // recupere toute l'array de film
+      console.log('storedData', storedData)
+    if (storedData) {
+      const retrievedData = JSON.parse(storedData); // Parse the stored JSON data into an array
+      retrievedData.splice(i, 1); // Remove the item at the specified index
+      await AsyncStorage.setItem('item', JSON.stringify(retrievedData)); // Save the updated array back to AsyncStorage
+      console.log('Data removed and updated in AsyncStorage.');
+    } else {
+      console.log('No data found in AsyncStorage.');
+    }
+  } catch (error) {
+    console.log('Error:', error);
+  }console.log('Done.');
+};
 
   // Fonction pour afficher les films (DISPLAY)
   const showFilm=()=>(
@@ -149,7 +193,7 @@ const newMovie = {
       const truncatedTitle = movie.title.length > 15 ? movie.title.substring(0, 10) + "..." : movie.title;
       return <View key={i}>
         <ImageBackground  style={[styles.resultBlockWatch]} imageStyle={{borderRadius: 40, opacity: 0.3, borderColor: 'lightgrey', borderWidth: 3}} source={{uri:`${movie.poster}`}}>
-        <View style={[styles.headerBlock]}>
+        <View>
            <View>
             {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Light', color: 'white', fontSize: 10}}>{movie.genre}</Text>}
             {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Medium', color: 'white', fontSize: 20, fontWeight: 700}}>{truncatedTitle}</Text>}
@@ -162,40 +206,20 @@ const newMovie = {
            </BlurView>
            </View>
         </View>
-        <View style={[styles.addButtonWL, styles.dropShadow]}><Button onPress={()=> triggerAlert(i)} title="x" color='grey'/></View>
+        <View style={[styles.addButtonWL, styles.dropShadow, {position: 'absolute', right:60}]}><Button onPress={()=> triggerAlert(i)} title="x" color='grey'/></View>
         </ImageBackground>
       </View> 
     }
   ))
      
- 
-  //Fonction pour récupérer les données de l'api à partir du titre inputed
-    const findMovie = async (title) => {
-      const url= `http://www.omdbapi.com/?t=${title}&apikey=348eb517`
-      try {
-        const res = await axios.get(url);
-        console.log(res)
-        // if response is true 
-        let {Title, Year, Runtime, Genre, Director, Poster} = res.data;
-        console.log(res.data)
-        console.log(81,{title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster})
-        // Destructure l'objet reçu
-        setMovie({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster});
-        // trigger addToWatchList
-        addToWatchList({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster})
-      }catch (error) {
-       setError(error.message); 
-      }
-    };
 
   // Fonction pour calculer le nombre de films dans la watchList
      const moviesLeft=()=>{return setLengthList(retrievedData.length)}
 
   // Re-render when number of item change in watchList (permet de changer nombre d'items affichés dans la liste)
-    useEffect(()=>{
-  // findMovie
-    moviesLeft();
-    },[retrievedData])
+    useEffect(()=>{moviesLeft();},[retrievedData])
+
+
 
 ////////////////////////////////////////// FOR RETURN //////////////////////////////////////////
 
@@ -203,7 +227,7 @@ const newMovie = {
     <LinearGradient colors={['#192b87', '#5dbdf5']} style={styles.container}>
     <SafeAreaView>
         <View>
-          {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 50, paddingTop: 10, paddingRight: 10, marginTop: 10, marginLeft:20, color:'white'}}>Hello,</Text>}          
+          {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 50, paddingTop: 10, paddingRight: 10, marginTop: 20, marginLeft:20, color:'white'}}>Hello,</Text>}          
           {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 15, paddingTop: 10, paddingBottom:10, marginBottom: 10, marginLeft:20,color:'white'}}>{ lengthList<=1 ? `you have ${lengthList} film to watch` : `you have ${lengthList} films to watch` }</Text>}
         </View>
         <View  style={styles.searchContainer}>
@@ -215,7 +239,7 @@ const newMovie = {
           {results.length>0 && <Text style={[styles.header, {fontFamily: 'FT88-Serif', color: 'white'}]}>Matched results</Text>}  
           {results.length>0 && showResult()}
           {retrievedData.length>0 && <Text style={[styles.header, {fontFamily: 'FT88-Serif', color: 'white'}]}>My watchlist</Text>}  
-          {retrievedData.length>0 && showFilm()}
+          {data.length>0 && showFilm()}
           </ScrollView>
     </SafeAreaView>
     </LinearGradient>
@@ -235,12 +259,12 @@ const styles = StyleSheet.create({
   addButton:addButton,
   innerShadow:innerShadow,
   dropShadow: dropShadow,
-  headerBlock: headerBlock,
   addWLBtn:addWLBtn,
   dropShadowInput:dropShadowInput,
   addButtonInput: {...addButton, right:55},
-  addButtonSearch: {...addButton, right: 50, bottom:2, },
-  addButtonWL: {...addButton, right: 50, bottom:43, height: 22, width: 22, borderWidth: 3, borderColor:'#5072A7' },
+  addButtonSearch: {...addButton, bottom:2, position: 'absolute',left:280, bottom:21},
+  addButtonWL: {...addButton, right:10, height:40, width: 40, borderWidth: 3, borderColor:'#5072A7' },
   glassComponent: glassComponent,
-  resultBlockWatch: {...resultBlock, flex:1}
+  resultBlockWatch: {...resultBlock, flex:1},
+  resultBlockSearch: {...resultBlock, gap:50}
 })
