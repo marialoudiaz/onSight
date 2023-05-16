@@ -4,14 +4,19 @@ import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {container, searchContainer, header, headerinput, text, button, image, searchbox, resultBlock, addButton, innerShadow, dropShadow, addWLBtn, dropShadowInput, glassComponent} from '../style/style.js';
 import {useFonts} from 'expo-font';
+import Icon from 'react-native-vector-icons/FontAwesome'
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
+import Search from './Search'
 
 
 export default function WatchList({dataPassed}){
- 
+  console.log('dataPassed',dataPassed)
 //////////////////// USE OF ASYNCSTORAGE /////////////////////////
 const [data, setData]=useState([])
+const [retrievedData, setRetrievedData]=useState([])
+const [lengthList, setLengthList]=useState(0)
+
 useEffect(() => {
   // make it an array
   if (dataPassed && Array.isArray(dataPassed)) {
@@ -20,7 +25,6 @@ useEffect(() => {
 }, [dataPassed]);
 console.log('data',data)
 
-const [retrievedData, setRetrievedData]=useState([])
 // send each item created to the storage
 const _storeData = async (data) => {
   try {
@@ -39,16 +43,9 @@ const _retrieveData = async () => {
     console.log('parsedvalue', bringBackToArray)
     setRetrievedData(bringBackToArray)
 // now we have data restored from asyncStorage parsed back into an array which we can use
-} catch (error) {
-}
-};
-//////////////////// END OF ASYNCSTORAGE /////////////////////////
-
-//////////////////// STATE COMPONENTS AND VARIABLES /////////////////////////
-//length of watchList
-const [lengthList, setLengthList]=useState(0)
-const [error, setError]=useState('')
-///////////////////// TYPOS ///////////////////////////////////////
+} catch (error) {}};
+// Will trigger only once : when opening the app
+useEffect(()=>{_retrieveData()},[])/////////// TYPOS ///////////////////////////////////////
 const [fontsLoaded] = useFonts({
   'FT88-Regular': require('../assets/fonts/FT88-Regular.ttf'),
   'FT88-Serif': require('../assets/fonts/FT88-Serif.ttf'),
@@ -57,23 +54,18 @@ const [fontsLoaded] = useFonts({
   'Montserrat-Medium' : require('../assets/fonts/Montserrat-Medium.ttf'),
   'Montserrat-SemiBold' : require('../assets/fonts/Montserrat-SemiBold.ttf')
 }) 
-//////////////////// END IF STATE COMPONENTS AND VARIABLES /////////////////////////
-
-// Will trigger only once : when opening the app
-useEffect(()=>{_retrieveData()},[])
-//////////////////// FONCTIONS ///////////////////////////////////////////////
   // Fonction pour supprimer un film de la liste  (DELETE)
     const myAlert =(i)=>{
       Alert.alert('Reset Data','Are you sure you want to delete this movie from the list ?',
         [{text: 'Cancel', onPress:()=> console.log('Cancel Pressed'), style: 'cancel'}, {text: 'OK', onPress:()=>removeValue(i) },],{cancelable: false})
     }  
-    // I = INDEX OF ELEMENT TO DELETE IN THE ARRAY
-    const removeValue = (i)=>{
+      // I = INDEX OF ELEMENT TO DELETE IN THE ARRAY
+      const removeValue = (i)=>{
       // 1 - enlever l'élement de data
       const removeFromData = data.filter((_, index) => index !== i);
       console.log('removeFromData',data)
       setData(removeFromData)
-  //     // 2- enlever l'élement de l'AsyncStorage : will be done by the useEffect that stores the data everytime data changes
+     // 2- enlever l'élement de l'AsyncStorage : will be done by the useEffect that stores the data everytime data changes
   //   try {
   //     const storedData = await AsyncStorage.getItem('item') // recupere toute l'array de film
   //     console.log('storedData', storedData)
@@ -91,9 +83,8 @@ useEffect(()=>{_retrieveData()},[])
   //     console.log('No data found in AsyncStorage.');
   //   }
   // } catch (error) {
-  //   console.log('Error:', error);
-  // }
-console.log('Done.');
+  //   console.log('Error:', error);// }
+  // console.log('Done.');
 };
 
   // Fonction pour afficher les films (DISPLAY)
@@ -125,28 +116,23 @@ console.log('Done.');
   ))
 
   // Fonction pour calculer le nombre de films dans la watchList
-     const moviesLeft=()=>{return setLengthList({data}.length)}
+     const moviesLeft=()=>{return setLengthList(data.length)}
   // Re-render when number of item change in watchList (permet de changer nombre d'items affichés dans la liste)
     useEffect(()=>{moviesLeft();},[retrievedData])
-
-// une fois que data est assigné 
-useEffect(()=>{
-  if({data}.length > 0){
-    _storeData(); // une fois data ajoutés au component data, je lance la fonction _storeData
-    // _retrieveData()
-}},[data])
+  // une fois que data est assigné 
+  useEffect(()=>{if({data}.length > 0){_storeData();}},[data])
 
   return (
     <LinearGradient colors={['#192b87', '#5dbdf5']} style={styles.container}>
-    <SafeAreaView>
+      <SafeAreaView>
         <View>
           {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 42, paddingTop: 10, paddingRight: 10, marginTop: 20, marginLeft:20, color:'white'}}>My watchlist</Text>}          
           {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 15.4, paddingTop: 10, paddingBottom:10, marginBottom: 10, marginLeft:20,color:'white'}}>{ lengthList<=1 ? `you have ${lengthList} film to watch` : `you have ${lengthList} films to watch` }</Text>}
         </View>
         <ScrollView>
-         {{data}.length>0 && showFilm()}
+          {data.length>0 && showFilm()}
         </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
     </LinearGradient>
   )
 }
