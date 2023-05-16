@@ -125,6 +125,12 @@
   overflow: 'hidden'
   }
 
+  bottomNavigation={
+    // flex: 1,
+    // justifyContent: 'center',
+    // alignItems:'center',
+    // backgroundColor: '#192b87',
+  }
 
 module.exports={
   container, 
@@ -141,5 +147,6 @@ module.exports={
   dropShadow,
   addWLBtn,
   dropShadowInput,
-  glassComponent
+  glassComponent,
+  bottomNavigation
 }
