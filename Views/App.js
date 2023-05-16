@@ -62,7 +62,10 @@ const [fontsLoaded] = useFonts({
 }) 
 //////////////////// END IF STATE COMPONENTS AND VARIABLES /////////////////////////
 
-
+// Will trigger only once : when opening the app
+useEffect(()=>{
+  _retrieveData()
+},[])
 //////////////////// FONCTIONS ///////////////////////////////////////////////
 // // ce qui est input
 // const handleChange=(value)=>setInput(value);
@@ -142,46 +145,43 @@ const showResult=()=>{
   };
   console.log('setData', data)
 
-      // une fois que data est assigné 
-      useEffect(()=>{
-        if(data.length > 0){
-          _storeData(); // une fois data ajoutés au component data, je lance la fonction _storeData
-          // _retrieveData()
-      }},[data])
-
-      // Will trigger only once : when opening the app
-      useEffect(()=>{
-        _retrieveData()
-      },[])
 
   // Fonction pour supprimer un film de la liste  (DELETE)
-    const triggerAlert=(i)=>{myAlert(i)}
     const myAlert =(i)=>{
+      console.log(i)
       Alert.alert('Reset Data','Are you sure you want to delete this movie from the list ?',
         [{text: 'Cancel', onPress:()=> console.log('Cancel Pressed'), style: 'cancel'}, {text: 'OK', onPress:()=>removeValue(i) },],{cancelable: false})
     }  
     // I = INDEX OF ELEMENT TO DELETE IN THE ARRAY
    // called after myAlert  
-    const removeValue = async (i)=>{
-      console.log('i', i)
-    try {
-      const storedData = await AsyncStorage.getItem('item') // recupere toute l'array de film
-      console.log('storedData', storedData)
-    if (storedData) {
-      const retrievedData = JSON.parse(storedData); // Parse the stored JSON data into an array
-      retrievedData.splice(i, 1); // Remove the item at the specified index
-      const set = await AsyncStorage.setItem('item', JSON.stringify(retrievedData)); // Save the updated array back to AsyncStorage
-      setData(retrievedData)
-      // setRetrievedData(retrievedData);
-      console.log('set',set)
-      console.log('Data removed and updated in AsyncStorage.');
-    } else {
-      console.log('No data found in AsyncStorage.');
-    }
-  } catch (error) {
-    console.log('Error:', error);
-  }console.log('Done.');
+    const removeValue = (i)=>{
+      // 1 - enlever l'élement de data
+      const removeFromData = data.filter((_, index) => index !== i);
+      console.log('removeFromData',data)
+      setData(removeFromData)
+  //     // 2- enlever l'élement de l'AsyncStorage : will be done by the useEffect that stores the data everytime data changes
+  //   try {
+  //     const storedData = await AsyncStorage.getItem('item') // recupere toute l'array de film
+  //     console.log('storedData', storedData)
+  //   if (storedData) {
+  //     const retrievedData = JSON.parse(storedData); // Parse the stored JSON data into an array
+  //     console.log('retrievedData', retrievedData)
+  //     retrievedData.splice(i, 1); // Remove the item at the specified index
+  //     console.log('retrievedData', retrievedData)
+  //     const set = await AsyncStorage.setItem('item', JSON.stringify(retrievedData)); // Save the updated array back to AsyncStorage
+  //     setData(retrievedData)
+  //     // setRetrievedData(retrievedData);
+  //     console.log('set',set)
+  //     console.log('Data removed and updated in AsyncStorage.');
+  //   } else {
+  //     console.log('No data found in AsyncStorage.');
+  //   }
+  // } catch (error) {
+  //   console.log('Error:', error);
+  // }
+console.log('Done.');
 };
+
 
   // Fonction pour afficher les films (DISPLAY)
   const showFilm=()=>(
@@ -189,7 +189,7 @@ const showResult=()=>{
       {/*DISPLAY DOTS IF TOO LONG*/}
       const truncatedDirector = movie.director.length > 15 ? movie.director.substring(0, 10) + "..." : movie.director;
       const truncatedTitle = movie.title.length > 15 ? movie.title.substring(0, 10) + "..." : movie.title;
-      return <View key={i}>
+      return (<View key={i}>
         <ImageBackground  style={[styles.resultBlockWatch]} imageStyle={{borderRadius: 40, opacity: 0.3, borderColor: 'lightgrey', borderWidth: 3}} source={{uri:`${movie.poster}`}}>
         <View>
            <View>
@@ -201,22 +201,28 @@ const showResult=()=>{
            <BlurView blurType={"light"} blurAmount={50} reducedTransparencyFallbackColor="rgba(37,42,54,.25)" style={[styles.glassComponent]}>
            {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-SemiBold', color: 'white'}}>{movie.year}</Text>}
            {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-SemiBold', color: 'white'}}>{movie.runtime}</Text>}
+           {fontsLoaded&&<Text style={{fontFamily:'Montserra-Light', color: 'white' }}>{i}</Text>}
            </BlurView>
            </View>
         </View>
-        <View style={[ {position: 'absolute', top:10,right:55}]}><Icon name="remove" size={20} color='white'onPress={()=> triggerAlert(i)}/></View>
+        <View style={[{position: 'absolute', top:10,right:55}]}><Icon name="remove" size={20} color='white'onPress={()=> myAlert(i)}/></View>
         </ImageBackground>
       </View> 
-     }
+     )}
   ))
      
 
   // Fonction pour calculer le nombre de films dans la watchList
      const moviesLeft=()=>{return setLengthList(retrievedData.length)}
-
   // Re-render when number of item change in watchList (permet de changer nombre d'items affichés dans la liste)
     useEffect(()=>{moviesLeft();},[retrievedData])
 
+// une fois que data est assigné 
+useEffect(()=>{
+  if(data.length > 0){
+    _storeData(); // une fois data ajoutés au component data, je lance la fonction _storeData
+    // _retrieveData()
+}},[data])
 
 
 ////////////////////////////////////////// FOR RETURN //////////////////////////////////////////
