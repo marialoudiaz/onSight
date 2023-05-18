@@ -131,11 +131,18 @@ const showResult=()=>{
           poster: Poster
         };
         setData([...data, newMovie]); // au lieu de watchList
-        setWatchListData(prevData => [...prevData, newMovie]);
+        setWatchListData([...watchListData, newMovie]);
   };
   console.log('data in search', data)
   console.log('watchLisdata',watchListData)
-{  <WatchList dataPassed={watchListData}/>}
+
+{  useEffect(()=>{
+  <WatchList watchList={watchListData} setWatchListData={setWatchListData()}/>
+  {console.log('watchlistpassed',watchListData)}
+  {console.log('setWatchpassed',setWatchListData())}
+}, [watchListData])
+  
+}
 
 
   // Fonction pour calculer le nombre de films dans la watchList

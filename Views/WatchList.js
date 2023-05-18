@@ -7,11 +7,11 @@ import {useFonts} from 'expo-font';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
-import Search from './Search'
 
 
-export default function WatchList({dataPassed}){
-  console.log('dataPassed',dataPassed)
+export default function WatchList({WatchList, setWatchListData}){
+  console.log('WatchListpassed',WatchList)
+  console.log('SetWatchListPassed', setWatchListData)
 //////////////////// USE OF ASYNCSTORAGE /////////////////////////
 const [data, setData]=useState([])
 const [retrievedData, setRetrievedData]=useState([])
@@ -19,10 +19,10 @@ const [lengthList, setLengthList]=useState(0)
 
 useEffect(() => {
   // make it an array
-  if (dataPassed && Array.isArray(dataPassed)) {
-    setData(dataPassed);
+  if (WatchList && Array.isArray(WatchList)) {
+    setData(WatchList);
   }
-}, [dataPassed]);
+}, [WatchList]);
 console.log('data',data)
 
 // send each item created to the storage
