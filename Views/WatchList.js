@@ -74,7 +74,7 @@ const _storeData = async (data) => {
            <BlurView blurType={"light"} blurAmount={50} reducedTransparencyFallbackColor="rgba(37,42,54,.25)" style={[styles.glassComponent]}>
            {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-SemiBold', color: 'white'}}>{movie.year}</Text>}
            {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-SemiBold', color: 'white'}}>{movie.runtime}</Text>}
-           {fontsLoaded&&<Text style={{fontFamily:'Montserrat-Light', color: 'white' }}>{i}</Text>}
+           {fontsLoaded&&<Text style={{fontFamily:'Montserrat-Light', color: 'white' }}>{i+1}</Text>}
            </BlurView>
            </View>
         </View>

@@ -58,22 +58,37 @@ const searchFilm = (s) => {
     // chaque object.search envoyé dans setResults en tant qu'object 
     //Change l'état de results à l'array des recherches trouvées
       let newResults = data.Search
-      setResults(newResults); 
+      console.log('search',data.Search)
+      setResults(newResults)
     } else{setError('Movie not found')}}); }; 
 
 const showResult=()=>{
      return results.map((result,i)=>{
         return(
         <View key={i} style={styles.image}>
-            <ImageBackground  style={styles.resultBlockSearch} imageStyle={{borderRadius: 40, opacity: 0.3, borderColor: 'lightgrey', borderWidth: 3}} source={{uri:`${result.Poster}`}}>
-            <View style={styles.headerBlock}>
-              {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 18}}>{result.Title}</Text>}
-              {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 10, padding:2}}>{result.Type}</Text>}
-              {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 9, padding:2}}>{result.Year}</Text>}
-              </View>
-              <View style={[styles.addButtonSearch, styles.dropShadow]}><Button onPress={()=>handleSubmit(result.imdbID)} title="+" color="grey"/></View>
-            </ImageBackground>
-        </View>)})}
+          {result.Poster==='N/A'?(
+          <ImageBackground style={styles.resultBlockSearch} imageStyle={{borderRadius: 40, opacity: 0.3, borderColor: 'lightgrey', borderWidth: 3}} source={require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/onsightblurre-4.png')}>
+          <View style={styles.headerBlock}>
+          {fontsLoaded&&(<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 18}}>{result.Title}</Text>)}
+          {fontsLoaded&&(<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 10, padding:2}}>{result.Type}</Text>)}
+          {fontsLoaded&&(<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 9, padding:2}}>{result.Year}</Text>)}
+          </View>
+          <View style={[styles.addButtonSearch, styles.dropShadow]}>
+          <Button onPress={()=>handleSubmit(result.imdbID)} title="+" color="grey"/>
+          </View>
+          </ImageBackground>
+          ):(
+          <ImageBackground  style={styles.resultBlockSearch} imageStyle={{borderRadius: 40, opacity: 0.3, borderColor: 'lightgrey', borderWidth: 3}}  source={{uri:`${result.Poster}`}}>
+          <View style={styles.headerBlock}>
+          {fontsLoaded&&(<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 18}}>{result.Title}</Text>)}
+          {fontsLoaded&&(<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 10, padding:2}}>{result.Type}</Text>)}
+          {fontsLoaded&&(<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 9, padding:2}}>{result.Year}</Text>)}
+          </View>
+          <View style={[styles.addButtonSearch, styles.dropShadow]}> <Button onPress={()=>handleSubmit(result.imdbID)} title="+" color="grey"/></View>
+          </ImageBackground>
+         )}
+        </View>
+      )})}
   // ce qui est submit
   const handleSubmit=(id)=>{setResults([]);findMovie(id)};
 
@@ -85,8 +100,11 @@ const showResult=()=>{
       const res = await axios.get(url);
       // if response is true 
       let {Title, Year, Runtime, Genre, Director, Poster} = res.data;
+      console.log('res',res.data)
       // trigger addToWatchList
-      addToWatchList({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster})
+      if (Poster == "N/A"){
+        addToWatchList({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster})
+      }else{addToWatchList({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster})}  
     }catch (error) {setError(error.message);}};
 
   const addToWatchList = ({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster}) => {
@@ -122,8 +140,6 @@ const showResult=()=>{
           <ScrollView>
           {results.length>0 && <Text style={[styles.header, {fontFamily: 'FT88-Serif', color: 'white'}]}>Matched results</Text>}  
           {results.length>0 && showResult()}
-          {/* {data.length>0 && <Text style={[styles.header, {fontFamily: 'FT88-Serif', color: 'white'}]}>My watchlist</Text>}  
-          {data.length>0 && showFilm()} */}
           </ScrollView>
     </SafeAreaView>
   </LinearGradient>

@@ -11,6 +11,14 @@ const App = () => {
   // update from Search.js
   // will be updated in props in WatchList.js as well
 
+  const [fontsLoaded] = useFonts({
+    'FT88-Regular': require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/FT88-Regular.ttf'),
+    'FT88-Serif': require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/FT88-Serif.ttf'),
+    'Montserrat-Regular' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-Regular.ttf'),
+    'Montserrat-Light' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-Light.ttf'),
+    'Montserrat-Medium' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-Medium.ttf'),
+    'Montserrat-SemiBold' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-SemiBold.ttf')
+  })
 //////////////////// NAVIGATION /////////////////////////
 // defining routes with components to be rendered
 const SearchRoute =()=> <SearchComponent watchListData={watchListData} setWatchListData={setWatchListData} />
@@ -37,7 +45,7 @@ useEffect(() => {
 
 return (
     <SafeAreaProvider>
-        <BottomNavigation navigationState={state} onIndexChange={handleIndexChange} renderScene={renderScene}/>
+      <BottomNavigation navigationState={state} onIndexChange={handleIndexChange} renderScene={renderScene}/>
     </SafeAreaProvider>
     )
 }
