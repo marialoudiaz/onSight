@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {container, searchContainer, header, headerinput, text, button, image, searchbox, resultBlock, addButton, innerShadow, dropShadow, addWLBtn, dropShadowInput, glassComponent, bottomNavigation} from '../style/style.js';
 import { LinearGradient } from 'expo-linear-gradient';
 import {useFonts} from 'expo-font';
+import { GpsFixed } from '@mui/icons-material';
 
 
 export default function Search({watchListData, setWatchListData}){
@@ -60,7 +61,7 @@ const searchFilm = (s) => {
       console.log('search',data.Search)
       setResults(newResults)
     } else{
-      setError('After reviewing every single movie names known to mankind, we cannot provide anything. Please forgive us.')
+      setError("After reviewing every single movie names known to mankind, we cannot provide anything ")
     }
   });
 }; 
@@ -160,10 +161,11 @@ const showResult=()=>{
         <View style={[styles.addButtonInput, styles.dropShadow]}><Button onPress={()=>searchFilm(s)} title="+" color="grey"/></View>
         </View>
         {/* The suggestion from search + Triggered quand results a des items */}
-          <ScrollView>
-          {results.length>0 && <Text style={[styles.header, {fontFamily: 'FT88-Serif', color: 'white'}]}>Matched results</Text>}  
-          {results.length>0 && showResult() || <Text style={[styles.header, {fontFamily: 'FT88-Regular', color: 'white', fontSize: 16, lineHeight: 21, paddingLeft:5, paddingRight:5}]}>{error}</Text>}
-          </ScrollView>
+        <ScrollView>
+        {results.length>0 && <Text style={[styles.header, {fontFamily: 'FT88-Serif', color: 'white'}]}>Matched results</Text>}  
+        {results.length>0 && showResult()}
+        {error!='' ? (<View style={{ flexDirection: 'row', alignItems: 'center'}}><Text style={[styles.header,{fontFamily: 'FT88-Regular', color: 'white', fontSize: 16, lineHeight: 21, paddingLeft:5, paddingRight:5}]}>{error}<Image style={{width:17, height:17, resizeMode:'cover'}} source={require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/emoji_sad.png')}/></Text></View>): <View></View>}
+        </ScrollView>
     </SafeAreaView>
   </LinearGradient>
 )}
