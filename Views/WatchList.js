@@ -8,9 +8,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 
 
-export default function WatchList({watchList, setWatchListData}){
+export default function WatchList({watchListData, setWatchListData}){
 //////////////////// USE OF ASYNCSTORAGE /////////////////////////
-const [data, setData]=useState([])
 const [retrievedData, setRetrievedData]=useState([])
 const [lengthList, setLengthList]=useState(0)
 const [fontsLoaded] = useFonts({
@@ -22,13 +21,14 @@ const [fontsLoaded] = useFonts({
   'Montserrat-SemiBold' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-SemiBold.ttf')
 })
 
-// pass props to data
-useEffect(() => { {/*make it an array*/} if (watchList && Array.isArray(watchList)) { setData(watchList)}}, [watchList]);
+// // pass props to data
+// useEffect(() => { {/*make it an array*/} if (watchListData && Array.isArray(watchListData)) {setData(watchListData)}}, [watchListData]);
+
 // send each item created to the storage
 const _storeData = async (data) => {
   try {
     // we need to stringify our array into a string
-    const set = await AsyncStorage.setItem('item', JSON.stringify(data) );
+    const set = await AsyncStorage.setItem('item', JSON.stringify(watchListData) );
   } catch (error){}};
   // Once put, retrieve them and display them
   const _retrieveData = async () => {
@@ -49,12 +49,16 @@ const _storeData = async (data) => {
     }  
       // I = INDEX OF ELEMENT TO DELETE IN THE ARRAY
       const removeValue = (i)=>{
-      const removeFromData = data.filter((_, index) => index !== i);// 1 - enlever l'élement de data
-      setData(removeFromData)};
+      // 1 - enlever l'élement de data
+      const removeFromData = watchListData.filter((_, index) => index !== i);
+      // removeFromData est la nouvelle constante mise a jour sans l'element supprimé. Peut donc assigner la const directement
+      console.log('onceRemoved', removeFromData)
+      // setData(removeFromData)
+      setWatchListData(removeFromData)};
 
   // Fonction pour afficher les films (DISPLAY)
   const showFilm=()=>(
-    data.map((movie,i)=>{
+    watchListData.map((movie,i)=>{
       {/*display dots if title too long*/}
       const truncatedDirector = movie.director.length > 15 ? movie.director.substring(0, 10) + "..." : movie.director;
       const truncatedTitle = movie.title.length > 15 ? movie.title.substring(0, 10) + "..." : movie.title;
@@ -77,15 +81,16 @@ const _storeData = async (data) => {
         <View style={[{position: 'absolute', top:10,right:55}]}><Icon name="remove" size={20} color='white'onPress={()=> myAlert(i)}/></View>
         </ImageBackground>
       </View> 
-     )}
-  ))
+      )} 
+    )
+  )
 
   // Fonction pour calculer le nombre de films dans la watchList
-     const moviesLeft=()=>{return setLengthList(data.length)}
+     const moviesLeft=()=>{return setLengthList(watchListData.length)}
   // Re-render when number of item change in watchList (permet de changer nombre d'items affichés dans la liste)
     useEffect(()=>{moviesLeft();},[retrievedData])
   // une fois que data est assigné 
-  useEffect(()=>{if({data}.length > 0){_storeData();}},[data])
+  useEffect(()=>{if({watchListData}.length > 0){_storeData();}},[watchListData])
 
   return (
     <LinearGradient colors={['#192b87', '#5dbdf5']} style={styles.container}>
@@ -95,7 +100,7 @@ const _storeData = async (data) => {
           {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 15.4, paddingTop: 10, paddingBottom:10, marginBottom: 10, marginLeft:20,color:'white'}}>{ lengthList<=1 ? `you have ${lengthList} film to watch` : `you have ${lengthList} films to watch` }</Text>}
         </View>
         <ScrollView>
-          {data.length>0 && showFilm()}
+          {watchListData.length>0  ? showFilm() : <View>{fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 20, paddingTop: 20, paddingBottom:10, marginBottom: 10, marginLeft:20,color:'white'}}>No movies added yet :-(</Text>}</View>}
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>

@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/onsight_splashscreen.png",
+      "image": "/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/onsight_splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
