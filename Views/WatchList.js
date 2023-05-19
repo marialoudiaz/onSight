@@ -14,13 +14,13 @@ const [data, setData]=useState([])
 const [retrievedData, setRetrievedData]=useState([])
 const [lengthList, setLengthList]=useState(0)
 const [fontsLoaded] = useFonts({
-  'FT88-Regular': require('../assets/fonts/FT88-Regular.ttf'),
-  'FT88-Serif': require('../assets/fonts/FT88-Serif.ttf'),
-  'Montserrat-Regular' : require('../assets/fonts/Montserrat-Regular.ttf'),
-  'Montserrat-Light' : require('../assets/fonts/Montserrat-Light.ttf'),
-  'Montserrat-Medium' : require('.../assets/fonts/Montserrat-Medium.ttf'),
-  'Montserrat-SemiBold' : require('../assets/fonts/Montserrat-SemiBold.ttf')
-}) 
+  'FT88-Regular': require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/FT88-Regular.ttf'),
+  'FT88-Serif': require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/FT88-Serif.ttf'),
+  'Montserrat-Regular' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-Regular.ttf'),
+  'Montserrat-Light' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-Light.ttf'),
+  'Montserrat-Medium' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-Medium.ttf'),
+  'Montserrat-SemiBold' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-SemiBold.ttf')
+})
 
 // pass props to data
 useEffect(() => { {/*make it an array*/} if (watchList && Array.isArray(watchList)) { setData(watchList)}}, [watchList]);
@@ -38,8 +38,10 @@ const _storeData = async (data) => {
       setRetrievedData(bringBackToArray)
   // now we have data restored from asyncStorage parsed back into an array which we can use
   } catch (error) {}};
+
   // Will trigger only once : when opening the app
   useEffect(()=>{_retrieveData()},[])
+
   // Fonction pour supprimer un film de la liste  (DELETE)
     const myAlert =(i)=>{
       Alert.alert('Reset Data','Are you sure you want to delete this movie from the list ?',
@@ -68,7 +70,7 @@ const _storeData = async (data) => {
            <BlurView blurType={"light"} blurAmount={50} reducedTransparencyFallbackColor="rgba(37,42,54,.25)" style={[styles.glassComponent]}>
            {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-SemiBold', color: 'white'}}>{movie.year}</Text>}
            {fontsLoaded&&<Text style={{fontFamily: 'Montserrat-SemiBold', color: 'white'}}>{movie.runtime}</Text>}
-           {fontsLoaded&&<Text style={{fontFamily:'Montserra-Light', color: 'white' }}>{i}</Text>}
+           {fontsLoaded&&<Text style={{fontFamily:'Montserrat-Light', color: 'white' }}>{i}</Text>}
            </BlurView>
            </View>
         </View>

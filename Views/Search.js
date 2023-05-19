@@ -4,15 +4,15 @@ import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {container, searchContainer, header, headerinput, text, button, image, searchbox, resultBlock, addButton, innerShadow, dropShadow, addWLBtn, dropShadowInput, glassComponent, bottomNavigation} from '../style/style.js';
 import { LinearGradient } from 'expo-linear-gradient';
+import {useFonts} from 'expo-font';
 import WatchList from './WatchList'
 
 
-export default function Search({watchList, setWatchListData}){
+export default function Search({watchListData, setWatchListData}){
 //////////////////// USE OF ASYNCSTORAGE /////////////////////////
 // the data to store (items)
 const [data, setData]=useState([])
 const [retrievedData, setRetrievedData]=useState([])
-const [watchListData, setWatchListData] = useState([]);
 // send each item created to the storage
 const _storeData = async (data) => {
   try {
@@ -39,12 +39,12 @@ const [s, setS] = useState('');
 const [results, setResults] = useState([]); 
 ///////////////////// TYPOS ///////////////////////////////////////
 const [fontsLoaded] = useFonts({
-  'FT88-Regular': require('../assets/fonts/FT88-Regular.ttf'),
-  'FT88-Serif': require('../assets/fonts/FT88-Serif.ttf'),
-  'Montserrat-Regular' : require('../assets/fonts/Montserrat-Regular.ttf'),
-  'Montserrat-Light' : require('../assets/fonts/Montserrat-Light.ttf'),
-  'Montserrat-Medium' : require('.../assets/fonts/Montserrat-Medium.ttf'),
-  'Montserrat-SemiBold' : require('../assets/fonts/Montserrat-SemiBold.ttf')
+  'FT88-Regular': require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/FT88-Regular.ttf'),
+  'FT88-Serif': require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/FT88-Serif.ttf'),
+  'Montserrat-Regular' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-Regular.ttf'),
+  'Montserrat-Light' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-Light.ttf'),
+  'Montserrat-Medium' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-Medium.ttf'),
+  'Montserrat-SemiBold' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-SemiBold.ttf')
 })
 //////////////////// END IF STATE COMPONENTS AND VARIABLES /////////////////////////
 
@@ -94,7 +94,8 @@ const showResult=()=>{
         setData([...data, newMovie]); // au lieu de watchList
         setWatchListData([...watchListData, newMovie]);};
 
-  useEffect(()=>{<WatchList watchList={watchListData} setWatchListData={setWatchListData()}/>}, [watchListData])
+  // useEffect(()=>{<WatchList watchList={watchListData} setWatchListData={setWatchListData()}/>},[watchListData])
+  // can't passed props to siblings
 
   // Fonction pour calculer le nombre de films dans la watchList
      const moviesLeft=()=>{return setLengthList(retrievedData.length)}
