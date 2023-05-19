@@ -5,7 +5,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {container, searchContainer, header, headerinput, text, button, image, searchbox, resultBlock, addButton, innerShadow, dropShadow, addWLBtn, dropShadowInput, glassComponent, bottomNavigation} from '../style/style.js';
 import { LinearGradient } from 'expo-linear-gradient';
 import {useFonts} from 'expo-font';
-import WatchList from './WatchList.js';
 
 
 export default function Search({watchListData, setWatchListData}){
@@ -61,7 +60,7 @@ const searchFilm = (s) => {
       console.log('search',data.Search)
       setResults(newResults)
     } else{
-      setError('Movie not found')
+      setError('After reviewing every single movie names known to mankind, we cannot provide anything. Please forgive us.')
     }
   });
 }; 
@@ -135,7 +134,7 @@ const showResult=()=>{
           setData([...data, newMovie]);
           setWatchListData([...watchListData, newMovie]);
         };}}catch(error){setError(error.message);}};
-        
+
   // useEffect(()=>{<WatchList watchList={watchListData} setWatchListData={setWatchListData()}/>},[watchListData])
   // can't passed props to siblings
 
@@ -163,7 +162,7 @@ const showResult=()=>{
         {/* The suggestion from search + Triggered quand results a des items */}
           <ScrollView>
           {results.length>0 && <Text style={[styles.header, {fontFamily: 'FT88-Serif', color: 'white'}]}>Matched results</Text>}  
-          {results.length>0 && showResult()}
+          {results.length>0 && showResult() || <Text style={[styles.header, {fontFamily: 'FT88-Regular', color: 'white', fontSize: 16, lineHeight: 21, paddingLeft:5, paddingRight:5}]}>{error}</Text>}
           </ScrollView>
     </SafeAreaView>
   </LinearGradient>
