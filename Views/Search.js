@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {container, searchContainer, header, headerinput, text, button, image, searchbox, resultBlock, addButton, innerShadow, dropShadow, addWLBtn, dropShadowInput, glassComponent, bottomNavigation} from '../style/style.js';
 import { LinearGradient } from 'expo-linear-gradient';
 import {useFonts} from 'expo-font';
-import WatchList from './WatchList'
+import WatchList from './WatchList.js';
 
 
 export default function Search({watchListData, setWatchListData}){
@@ -57,34 +57,38 @@ const searchFilm = (s) => {
     if (data.Response==="True"){
     // chaque object.search envoyé dans setResults en tant qu'object 
     //Change l'état de results à l'array des recherches trouvées
-      let newResults = data.Search
+      let newResults=data.Search
       console.log('search',data.Search)
       setResults(newResults)
-    } else{setError('Movie not found')}}); }; 
+    } else{
+      setError('Movie not found')
+    }
+  });
+}; 
 
 const showResult=()=>{
      return results.map((result,i)=>{
         return(
         <View key={i} style={styles.image}>
-          {result.Poster==='N/A'?(
-          <ImageBackground style={styles.resultBlockSearch} imageStyle={{borderRadius: 40, opacity: 0.3, borderColor: 'lightgrey', borderWidth: 3}} source={require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/onsightblurre-4.png')}>
+          {result.Poster==="N/A"?(
+          <ImageBackground style={styles.resultBlockSearch} imageStyle={{borderRadius:40,opacity:0.3,borderColor:'lightgrey',borderWidth: 3}} source={require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/onsightblurre-4.png')}>
           <View style={styles.headerBlock}>
-          {fontsLoaded&&(<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 18}}>{result.Title}</Text>)}
-          {fontsLoaded&&(<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 10, padding:2}}>{result.Type}</Text>)}
-          {fontsLoaded&&(<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 9, padding:2}}>{result.Year}</Text>)}
+          {fontsLoaded&&(<Text style={{fontFamily:'Montserrat-Regular',color:'white',fontSize:18}}>{result.Title}</Text>)}
+          {fontsLoaded&&(<Text style={{fontFamily:'Montserrat-Regular',color:'white',fontSize:10,padding:2}}>{result.Type}</Text>)}
+          {fontsLoaded&&(<Text style={{fontFamily:'Montserrat-Regular',color:'white',fontSize:9,padding:2}}>{result.Year}</Text>)}
           </View>
           <View style={[styles.addButtonSearch, styles.dropShadow]}>
           <Button onPress={()=>handleSubmit(result.imdbID)} title="+" color="grey"/>
           </View>
           </ImageBackground>
           ):(
-          <ImageBackground  style={styles.resultBlockSearch} imageStyle={{borderRadius: 40, opacity: 0.3, borderColor: 'lightgrey', borderWidth: 3}}  source={{uri:`${result.Poster}`}}>
+          <ImageBackground  style={styles.resultBlockSearch} imageStyle={{borderRadius:40,opacity:0.3,borderColor:'lightgrey',borderWidth:3}} source={{uri:`${result.Poster}`}}>
           <View style={styles.headerBlock}>
-          {fontsLoaded&&(<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 18}}>{result.Title}</Text>)}
-          {fontsLoaded&&(<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 10, padding:2}}>{result.Type}</Text>)}
-          {fontsLoaded&&(<Text style={{fontFamily: 'Montserrat-Regular', color: 'white', fontSize: 9, padding:2}}>{result.Year}</Text>)}
+          {fontsLoaded&&(<Text style={{fontFamily:'Montserrat-Regular',color:'white',fontSize:18}}>{result.Title}</Text>)}
+          {fontsLoaded&&(<Text style={{fontFamily:'Montserrat-Regular',color:'white',fontSize:10,padding:2}}>{result.Type}</Text>)}
+          {fontsLoaded&&(<Text style={{fontFamily:'Montserrat-Regular',color:'white',fontSize:9,padding:2}}>{result.Year}</Text>)}
           </View>
-          <View style={[styles.addButtonSearch, styles.dropShadow]}> <Button onPress={()=>handleSubmit(result.imdbID)} title="+" color="grey"/></View>
+          <View style={[styles.addButtonSearch, styles.dropShadow]}><Button onPress={()=>handleSubmit(result.imdbID)} title="+" color="grey"/></View>
           </ImageBackground>
          )}
         </View>
@@ -98,20 +102,40 @@ const showResult=()=>{
     const url= `http://www.omdbapi.com/?i=${id}&apikey=348eb517`
     try {
       const res = await axios.get(url);
+      console.log('res', res)
       // if response is true 
       let {Title, Year, Runtime, Genre, Director, Poster} = res.data;
       console.log('res',res.data)
       // trigger addToWatchList
-      if (Poster == "N/A"){
-        addToWatchList({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster})
-      }else{addToWatchList({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster})}  
-    }catch (error) {setError(error.message);}};
-
-  const addToWatchList = ({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster}) => {
-    const newMovie = {title: Title, year: Year, runtime: Runtime, genre: Genre,director: Director,poster: Poster};
-        setData([...data, newMovie]); // au lieu de watchList
-        setWatchListData([...watchListData, newMovie]);};
-
+      addToWatchList({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster})
+      if (Poster=='N/A') {
+        Poster='/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/onsightblurre-4.png';
+        addToWatchList = ({ title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director }) => {
+          const newMovie = {
+            title: Title,
+            year: Year,
+            runtime: Runtime,
+            genre: Genre,
+            director: Director,
+            poster: Poster,
+          };
+          setData([...data, newMovie]);
+          setWatchListData([...watchListData, newMovie]);
+        };
+      } else {
+        addToWatchList = ({ title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster }) => {
+          const newMovie = {
+            title: Title,
+            year: Year,
+            runtime: Runtime,
+            genre: Genre,
+            director: Director,
+            poster: Poster,
+          };
+          setData([...data, newMovie]);
+          setWatchListData([...watchListData, newMovie]);
+        };}}catch(error){setError(error.message);}};
+        
   // useEffect(()=>{<WatchList watchList={watchListData} setWatchListData={setWatchListData()}/>},[watchListData])
   // can't passed props to siblings
 
