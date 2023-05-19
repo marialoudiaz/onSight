@@ -1,59 +1,45 @@
 import React, {useState, useEffect} from 'react'
 import {StyleSheet, SafeAreaView, Button, View, Text, Alert, ScrollView, ImageBackground } from 'react-native'
-import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {container, searchContainer, header, headerinput, text, button, image, searchbox, resultBlock, addButton, innerShadow, dropShadow, addWLBtn, dropShadowInput, glassComponent} from '../style/style.js';
+import {container, searchContainer, header, text, button, image, searchbox, resultBlock, addButton, innerShadow, dropShadow, addWLBtn, dropShadowInput, glassComponent} from '../style/style.js';
 import {useFonts} from 'expo-font';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 
 
-export default function WatchList({WatchList, setWatchListData}){
-  console.log('WatchListpassed',WatchList)
-  console.log('SetWatchListPassed', setWatchListData)
+export default function WatchList({watchList, setWatchListData}){
 //////////////////// USE OF ASYNCSTORAGE /////////////////////////
 const [data, setData]=useState([])
 const [retrievedData, setRetrievedData]=useState([])
 const [lengthList, setLengthList]=useState(0)
-
-useEffect(() => {
-  // make it an array
-  if (WatchList && Array.isArray(WatchList)) {
-    setData(WatchList);
-  }
-}, [WatchList]);
-console.log('data',data)
-
-// send each item created to the storage
-const _storeData = async (data) => {
-  try {
-    // we need to stringify our array into a string
-    const set = await AsyncStorage.setItem('item', JSON.stringify(data) );
-    console.log('set',set)
-  } catch (error){
-  }
-};
-// Once put, retrieve them and display them
-const _retrieveData = async () => {
-  try {
-    const value = await AsyncStorage.getItem('item');
-    console.log('value',value)
-    let bringBackToArray= JSON.parse(value)
-    console.log('parsedvalue', bringBackToArray)
-    setRetrievedData(bringBackToArray)
-// now we have data restored from asyncStorage parsed back into an array which we can use
-} catch (error) {}};
-// Will trigger only once : when opening the app
-useEffect(()=>{_retrieveData()},[])/////////// TYPOS ///////////////////////////////////////
 const [fontsLoaded] = useFonts({
   'FT88-Regular': require('../assets/fonts/FT88-Regular.ttf'),
   'FT88-Serif': require('../assets/fonts/FT88-Serif.ttf'),
   'Montserrat-Regular' : require('../assets/fonts/Montserrat-Regular.ttf'),
   'Montserrat-Light' : require('../assets/fonts/Montserrat-Light.ttf'),
-  'Montserrat-Medium' : require('../assets/fonts/Montserrat-Medium.ttf'),
+  'Montserrat-Medium' : require('.../assets/fonts/Montserrat-Medium.ttf'),
   'Montserrat-SemiBold' : require('../assets/fonts/Montserrat-SemiBold.ttf')
 }) 
+
+// pass props to data
+useEffect(() => { {/*make it an array*/} if (watchList && Array.isArray(watchList)) { setData(watchList)}}, [watchList]);
+// send each item created to the storage
+const _storeData = async (data) => {
+  try {
+    // we need to stringify our array into a string
+    const set = await AsyncStorage.setItem('item', JSON.stringify(data) );
+  } catch (error){}};
+  // Once put, retrieve them and display them
+  const _retrieveData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('item');
+      let bringBackToArray=JSON.parse(value)
+      setRetrievedData(bringBackToArray)
+  // now we have data restored from asyncStorage parsed back into an array which we can use
+  } catch (error) {}};
+  // Will trigger only once : when opening the app
+  useEffect(()=>{_retrieveData()},[])
   // Fonction pour supprimer un film de la liste  (DELETE)
     const myAlert =(i)=>{
       Alert.alert('Reset Data','Are you sure you want to delete this movie from the list ?',
@@ -61,36 +47,13 @@ const [fontsLoaded] = useFonts({
     }  
       // I = INDEX OF ELEMENT TO DELETE IN THE ARRAY
       const removeValue = (i)=>{
-      // 1 - enlever l'élement de data
-      const removeFromData = data.filter((_, index) => index !== i);
-      console.log('removeFromData',data)
-      setData(removeFromData)
-     // 2- enlever l'élement de l'AsyncStorage : will be done by the useEffect that stores the data everytime data changes
-  //   try {
-  //     const storedData = await AsyncStorage.getItem('item') // recupere toute l'array de film
-  //     console.log('storedData', storedData)
-  //   if (storedData) {
-  //     const retrievedData = JSON.parse(storedData); // Parse the stored JSON data into an array
-  //     console.log('retrievedData', retrievedData)
-  //     retrievedData.splice(i, 1); // Remove the item at the specified index
-  //     console.log('retrievedData', retrievedData)
-  //     const set = await AsyncStorage.setItem('item', JSON.stringify(retrievedData)); // Save the updated array back to AsyncStorage
-  //     setData(retrievedData)
-  //     // setRetrievedData(retrievedData);
-  //     console.log('set',set)
-  //     console.log('Data removed and updated in AsyncStorage.');
-  //   } else {
-  //     console.log('No data found in AsyncStorage.');
-  //   }
-  // } catch (error) {
-  //   console.log('Error:', error);// }
-  // console.log('Done.');
-};
+      const removeFromData = data.filter((_, index) => index !== i);// 1 - enlever l'élement de data
+      setData(removeFromData)};
 
   // Fonction pour afficher les films (DISPLAY)
   const showFilm=()=>(
     data.map((movie,i)=>{
-      {/*DISPLAY DOTS IF TOO LONG*/}
+      {/*display dots if title too long*/}
       const truncatedDirector = movie.director.length > 15 ? movie.director.substring(0, 10) + "..." : movie.director;
       const truncatedTitle = movie.title.length > 15 ? movie.title.substring(0, 10) + "..." : movie.title;
       return (<View key={i}>
