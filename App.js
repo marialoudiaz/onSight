@@ -21,8 +21,8 @@ const App = () => {
   })
 //////////////////// NAVIGATION /////////////////////////
 // defining routes with components to be rendered
-const SearchRoute =()=> <SearchComponent watchListData={watchListData} setWatchListData={setWatchListData} />
-const WatchListRoute =()=> <WatchListComponent watchListData={watchListData} setWatchListData={setWatchListData}/>
+const SearchRoute =()=> <SearchComponent fontsLoaded={fontsLoaded} watchListData={watchListData} setWatchListData={setWatchListData} />
+const WatchListRoute =()=> <WatchListComponent fontsLoaded={fontsLoaded} watchListData={watchListData} setWatchListData={setWatchListData}/>
 // state with active route and labels/icons for routes
 const [state, setState]=useState({
   index:0,

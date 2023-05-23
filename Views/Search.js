@@ -8,7 +8,7 @@ import {useFonts} from 'expo-font';
 import { GpsFixed } from '@mui/icons-material';
 
 
-export default function Search({watchListData, setWatchListData}){
+export default function Search({fontsLoaded,watchListData, setWatchListData}){
 //////////////////// USE OF ASYNCSTORAGE /////////////////////////
 // the data to store (items)
 const [data, setData]=useState([])
@@ -37,15 +37,6 @@ const [lengthList, setLengthList]=useState(0)
 const [error, setError]=useState('')
 const [s, setS] = useState(''); 
 const [results, setResults] = useState([]); 
-///////////////////// TYPOS ///////////////////////////////////////
-const [fontsLoaded] = useFonts({
-  'FT88-Regular': require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/FT88-Regular.ttf'),
-  'FT88-Serif': require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/FT88-Serif.ttf'),
-  'Montserrat-Regular' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-Regular.ttf'),
-  'Montserrat-Light' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-Light.ttf'),
-  'Montserrat-Medium' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-Medium.ttf'),
-  'Montserrat-SemiBold' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-SemiBold.ttf')
-})
 //////////////////// END IF STATE COMPONENTS AND VARIABLES /////////////////////////
 
 // Will trigger only once : when opening the app
@@ -98,6 +89,21 @@ const showResult=()=>{
 
   /////////////////////////////////// FOR WATCHLIST ///////////////////////////////////////
   //Fonction pour récupérer les données de l'api à partir du titre inputed
+
+
+  const addToWatchList = ({ title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster }) => {
+    const newMovie = {
+      title: Title,
+      year: Year,
+      runtime: Runtime,
+      genre: Genre,
+      director: Director,
+      poster: Poster,
+    };
+    setData([...data, newMovie]);
+    setWatchListData([...watchListData, newMovie]);
+  }
+
   const findMovie = async (id) => {
     const url= `http://www.omdbapi.com/?i=${id}&apikey=348eb517`
     try {
@@ -107,43 +113,21 @@ const showResult=()=>{
       let {Title, Year, Runtime, Genre, Director, Poster} = res.data;
       console.log('res',res.data)
       // trigger addToWatchList
-      addToWatchList({title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster})
       if (Poster=='N/A') {
         Poster='/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/onsightblurre-4.png';
-        addToWatchList = ({ title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director }) => {
-          const newMovie = {
-            title: Title,
-            year: Year,
-            runtime: Runtime,
-            genre: Genre,
-            director: Director,
-            poster: Poster,
-          };
-          setData([...data, newMovie]);
-          setWatchListData([...watchListData, newMovie]);
-        };
-      } else {
-        addToWatchList = ({ title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster }) => {
-          const newMovie = {
-            title: Title,
-            year: Year,
-            runtime: Runtime,
-            genre: Genre,
-            director: Director,
-            poster: Poster,
-          };
-          setData([...data, newMovie]);
-          setWatchListData([...watchListData, newMovie]);
-        };}}catch(error){setError(error.message);}};
-
+        addToWatchList({ title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster })
+      }else {
+        addToWatchList({ title: Title, year: Year, runtime: Runtime, genre: Genre, director: Director, poster: Poster })
+      };
+    }catch(error){
+    setError(error.message)
+}}
   // useEffect(()=>{<WatchList watchList={watchListData} setWatchListData={setWatchListData()}/>},[watchListData])
   // can't passed props to siblings
-
   // Fonction pour calculer le nombre de films dans la watchList
      const moviesLeft=()=>{return setLengthList(retrievedData.length)}
   // Re-render when number of item change in watchList (permet de changer nombre d'items affichés dans la liste)
     useEffect(()=>{moviesLeft();},[retrievedData])
-
   // une fois que data est assigné 
   useEffect(()=>{if(data.length>0){_storeData();{/*une fois data ajoutés au component data, je lance la fonction _storeData*/}}},[data])
 
@@ -191,5 +175,5 @@ const styles = StyleSheet.create({
   glassComponent: glassComponent,
   resultBlockWatch: {...resultBlock, flex:1},
   resultBlockSearch: {...resultBlock, gap:50},
-  bottomNavigation: bottomNavigation
+  bottomNavigation: bottomNavigation,
 })
