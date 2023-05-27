@@ -8,28 +8,10 @@ import {useFonts} from 'expo-font';
 import { GpsFixed } from '@mui/icons-material';
 
 
-export default function Search({fontsLoaded,watchListData, setWatchListData}){
+export default function Search({_storeData,fontsLoaded,watchListData, setWatchListData}){
 //////////////////// USE OF ASYNCSTORAGE /////////////////////////
 // the data to store (items)
 const [data, setData]=useState([])
-const [retrievedData, setRetrievedData]=useState([])
-// send each item created to the storage
-const _storeData = async (data) => {
-  try {
-    // we need to stringify our array into a string
-    const set = await AsyncStorage.setItem('item', JSON.stringify(data) );
-  } catch (error){
-  }
-};
-// Once put, retrieve them and display them
-const _retrieveData = async()=>{
-  try {
-    const value = await AsyncStorage.getItem('item') || [];// Or set to empty array for when user is new(no data to retrieve then)
-    let bringBackToArray= JSON.parse(value)
-    setRetrievedData(bringBackToArray)
-// now we have data restored from asyncStorage parsed back into an array which we can use
-} catch (error) {}};
-//////////////////// END OF ASYNCSTORAGE /////////////////////////
 
 //////////////////// STATE COMPONENTS AND VARIABLES /////////////////////////
 //length of watchList
@@ -39,8 +21,6 @@ const [s, setS] = useState('');
 const [results, setResults] = useState([]); 
 //////////////////// END IF STATE COMPONENTS AND VARIABLES /////////////////////////
 
-// Will trigger only once : when opening the app
-useEffect(()=>{_retrieveData()},[])
 /////////////////////////////////// FOR SEARCH ///////////////////////////////////////
 const searchFilm = (s) => {
   const url= `http://www.omdbapi.com/?s=${s}&apikey=348eb517`;
@@ -104,6 +84,8 @@ const showResult=()=>{
     setWatchListData([...watchListData, newMovie]);
   }
 
+  // a chaque fois que je modifie watchListData : modifier dans AsyncStorage
+
   const findMovie = async (id) => {
     const url= `http://www.omdbapi.com/?i=${id}&apikey=348eb517`
     try {
@@ -122,12 +104,6 @@ const showResult=()=>{
     }catch(error){
     setError(error.message)
 }}
-  // useEffect(()=>{<WatchList watchList={watchListData} setWatchListData={setWatchListData()}/>},[watchListData])
-  // can't passed props to siblings
-  // Fonction pour calculer le nombre de films dans la watchList
-     const moviesLeft=()=>{return setLengthList(retrievedData.length)}
-  // Re-render when number of item change in watchList (permet de changer nombre d'items affichés dans la liste)
-    useEffect(()=>{moviesLeft();},[retrievedData])
   // une fois que data est assigné 
   useEffect(()=>{if(data.length>0){_storeData();{/*une fois data ajoutés au component data, je lance la fonction _storeData*/}}},[data])
 

@@ -8,30 +8,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 
 
-export default function WatchList({fontsLoaded,watchListData, setWatchListData}){
+export default function WatchList({_storeData,fontsLoaded,watchListData, setWatchListData}){
 //////////////////// USE OF ASYNCSTORAGE /////////////////////////
-const [retrievedData, setRetrievedData]=useState([])
 const [lengthList, setLengthList]=useState(0)
-// // pass props to data
-// useEffect(() => { {/*make it an array*/} if (watchListData && Array.isArray(watchListData)) {setData(watchListData)}}, [watchListData]);
 
-// send each item created to the storage
-const _storeData = async (data) => {
-  try {
-    // we need to stringify our array into a string
-    const set = await AsyncStorage.setItem('item', JSON.stringify(watchListData) );
-  } catch (error){}};
-  // Once put, retrieve them and display them
-  const _retrieveData = async () => {
-    try {
-      const value = await AsyncStorage.getItem('item');
-      let bringBackToArray=JSON.parse(value)
-      setRetrievedData(bringBackToArray)
-  // now we have data restored from asyncStorage parsed back into an array which we can use
-  } catch (error) {}};
-
-  // Will trigger only once : when opening the app
-  useEffect(()=>{_retrieveData()},[])
 
   // Fonction pour supprimer un film de la liste  (DELETE)
     const myAlert =(i)=>{
@@ -79,7 +59,7 @@ const _storeData = async (data) => {
   // Fonction pour calculer le nombre de films dans la watchList
      const moviesLeft=()=>{return setLengthList(watchListData.length)}
   // Re-render when number of item change in watchList (permet de changer nombre d'items affichés dans la liste)
-    useEffect(()=>{moviesLeft();},[retrievedData])
+    useEffect(()=>{moviesLeft();},[watchListData])
   // une fois que data est assigné 
   useEffect(()=>{if({watchListData}.length > 0){_storeData();}},[watchListData])
 
@@ -91,7 +71,7 @@ const _storeData = async (data) => {
           {fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 15.4, paddingTop: 10, paddingBottom:10, marginBottom: 10, marginLeft:20,color:'white'}}>{ lengthList<=1 ? `you have ${lengthList} film to watch` : `you have ${lengthList} films to watch` }</Text>}
         </View>
         <ScrollView>
-          {watchListData.length>0  ? showFilm() : <View>{fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 20, paddingTop: 20, paddingBottom:10, marginBottom: 10, marginLeft:20,color:'white'}}>No movies added yet :-(</Text>}</View>}
+          {watchListData.length>0 ? showFilm() : <View>{fontsLoaded &&<Text style={{fontFamily: 'FT88-Regular', fontSize: 20, paddingTop: 20, paddingBottom:10, marginBottom: 10, marginLeft:20,color:'white'}}>No movies added yet :-(</Text>}</View>}
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
