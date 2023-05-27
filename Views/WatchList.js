@@ -8,10 +8,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 
 
-export default function WatchList({_storeData,fontsLoaded,watchListData, setWatchListData}){
+export default function WatchList({storeData,fontsLoaded,watchListData, setWatchListData}){
 //////////////////// USE OF ASYNCSTORAGE /////////////////////////
 const [lengthList, setLengthList]=useState(0)
-
 
   // Fonction pour supprimer un film de la liste  (DELETE)
     const myAlert =(i)=>{
@@ -60,8 +59,8 @@ const [lengthList, setLengthList]=useState(0)
      const moviesLeft=()=>{return setLengthList(watchListData.length)}
   // Re-render when number of item change in watchList (permet de changer nombre d'items affichés dans la liste)
     useEffect(()=>{moviesLeft();},[watchListData])
-  // une fois que data est assigné 
-  useEffect(()=>{if({watchListData}.length > 0){_storeData();}},[watchListData])
+  // // une fois que data est assigné 
+  // useEffect(()=>{if({watchListData}.length > 0){storeData();}},[watchListData])
 
   return (
     <LinearGradient colors={['#192b87', '#5dbdf5']} style={styles.container}>

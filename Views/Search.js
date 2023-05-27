@@ -8,14 +8,12 @@ import {useFonts} from 'expo-font';
 import { GpsFixed } from '@mui/icons-material';
 
 
-export default function Search({_storeData,fontsLoaded,watchListData, setWatchListData}){
+export default function Search({storeData,fontsLoaded,watchListData, setWatchListData}){
 //////////////////// USE OF ASYNCSTORAGE /////////////////////////
 // the data to store (items)
 const [data, setData]=useState([])
 
 //////////////////// STATE COMPONENTS AND VARIABLES /////////////////////////
-//length of watchList
-const [lengthList, setLengthList]=useState(0)
 const [error, setError]=useState('')
 const [s, setS] = useState(''); 
 const [results, setResults] = useState([]); 
@@ -104,8 +102,8 @@ const showResult=()=>{
     }catch(error){
     setError(error.message)
 }}
-  // une fois que data est assigné 
-  useEffect(()=>{if(data.length>0){_storeData();{/*une fois data ajoutés au component data, je lance la fonction _storeData*/}}},[data])
+  // // une fois que data est assigné 
+  // useEffect(()=>{if(data.length>0){storeData();{/*une fois data ajoutés au component data, je lance la fonction _storeData*/}}},[data])
 
 ////////////////////////////////////////// FOR RETURN //////////////////////////////////////////
 

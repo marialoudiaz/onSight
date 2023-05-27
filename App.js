@@ -4,13 +4,13 @@ import React, {useState, useEffect} from 'react'
 import {useFonts} from 'expo-font';
 import SearchComponent from './Views/Search';
 import WatchListComponent from './Views/WatchList';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const App = () => {
   // 1 - fonction Retrieve Data appellée = watchLisData updatée
   const [watchListData, setWatchListData] = useState([]);
   //state inside App.js pass via props from App.js to WatchList.js
-  // update from Search.js
-  // will be updated in props in WatchList.js as well
+  // will be updated via in Serach and WatchList
 
   const [fontsLoaded] = useFonts({
     'FT88-Regular': require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/FT88-Regular.ttf'),
@@ -21,40 +21,37 @@ const App = () => {
     'Montserrat-SemiBold' : require('/Users/mariadiaz/Documents/BCS/ReactNative/myfirstapp/assets/fonts/Montserrat-SemiBold.ttf')
   })
 //////////////////// USE OF ASYNCSTORAGE /////////////////////////
-// the data to store (items)
+// // the data to store (items)
   const [data, setData]=useState([])
-  const _storeData = async (data) => {
+  const storeData = async (value) => {
     try {
-      // we need to stringify our array into a string
-      const set = await AsyncStorage.setItem('item', JSON.stringify(data) );
+      const set = await AsyncStorage.setItem('item', JSON.stringify(value) );// we need to stringify our array into a string
     } catch (error){
     }
   };
 
 // Quand je loade l'app je checke tout ce qu'il ya dans l'AsyncStorage
 // Once put, retrieve them and display them
-  const _retrieveData = async()=>{
+  const retrieveData = async()=>{
     try {
       const value = await AsyncStorage.getItem('item') || [];// Or set to empty array for when user is new (no data to retrieve then)
       let bringBackToArray= JSON.parse(value)
-      setWatchListData(...watchListData, bringBackToArray)
+      setWatchListData(bringBackToArray)
   // now we have data restored from asyncStorage parsed back into an array which we can use
-    } catch (error) {}};
+    } catch (error) {
+    }
+  };
 //////////////////// END OF ASYNCSTORAGE /////////////////////////
 // Quand je load l'app : je recupere contenu de l'AS
-useEffect(()=>{
-  _retrieveData()
-  },[])
+  useEffect(()=>{retrieveData()},[])
+// a chaque fois que watchListData change (storeData est appelée)
+  useEffect(()=>{storeData()},[watchListData])
 
-  // a chaque fois que watchListData change (storeData est appelée)
-useEffect(()=>{
-_storeData()
-},[watchListData])
 //////////////////// NAVIGATION /////////////////////////
 // defining routes with components to be rendered
 // Passe en props watchListData (updaté de AS) + fonts + storeData(add+delete in both components)
-  const SearchRoute=()=> <SearchComponent _storeData={_storeData} fontsLoaded={fontsLoaded} watchListData={watchListData} setWatchListData={setWatchListData} />
-  const WatchListRoute=()=> <WatchListComponent _storeData={_storeData} fontsLoaded={fontsLoaded} watchListData={watchListData} setWatchListData={setWatchListData}/>
+  const SearchRoute=()=> <SearchComponent storeData={storeData} fontsLoaded={fontsLoaded} watchListData={watchListData} setWatchListData={setWatchListData} />
+  const WatchListRoute=()=> <WatchListComponent storeData={storeData} fontsLoaded={fontsLoaded} watchListData={watchListData} setWatchListData={setWatchListData}/>
   // state with active route and labels/icons for routes
   const [state, setState]=useState({index:0,routes:[{key:'loupe', title:'search', focusedIcon:'magnify-plus', unfocusedIcon: 'magnify-plus-outline'},{key:'coeur', title:'watchlist', focusedIcon:'cards-heart', unfocusedIcon: 'cards-heart-outline'}]})
   // update route index
@@ -62,7 +59,7 @@ _storeData()
   //linking keys from state to routes
   const renderScene = BottomNavigation.SceneMap({loupe: SearchRoute, coeur: WatchListRoute,});
 
-  useEffect(() => { handleIndexChange(0);}, []);
+  useEffect(()=>{handleIndexChange(0);},[]);
   // Set initial index to 0 for SearchRoute
    
 return (
