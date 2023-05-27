@@ -25,7 +25,9 @@ const App = () => {
   const [data, setData]=useState([])
   const storeData = async (value) => {
     try {
-      const set = await AsyncStorage.setItem('item', JSON.stringify(value) );// we need to stringify our array into a string
+      const jsonValue = JSON.stringify(value)
+      await AsyncStorage.setItem('item', jsonValue)
+      // const set = await AsyncStorage.setItem('item', JSON.stringify(value) );// we need to stringify our array into a string
     } catch (error){
     }
   };

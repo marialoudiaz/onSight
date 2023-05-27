@@ -8,7 +8,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 
 
-export default function WatchList({storeData,fontsLoaded,watchListData, setWatchListData}){
+export default function WatchList({fontsLoaded,watchListData, setWatchListData}){
 //////////////////// USE OF ASYNCSTORAGE /////////////////////////
 const [lengthList, setLengthList]=useState(0)
 

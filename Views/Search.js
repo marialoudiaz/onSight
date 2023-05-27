@@ -8,7 +8,7 @@ import {useFonts} from 'expo-font';
 import { GpsFixed } from '@mui/icons-material';
 
 
-export default function Search({storeData,fontsLoaded,watchListData, setWatchListData}){
+export default function Search({fontsLoaded,watchListData, setWatchListData}){
 //////////////////// USE OF ASYNCSTORAGE /////////////////////////
 // the data to store (items)
 const [data, setData]=useState([])
