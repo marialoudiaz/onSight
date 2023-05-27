@@ -47,7 +47,7 @@ const App = () => {
 // Quand je load l'app : je recupere contenu de l'AS
   useEffect(()=>{retrieveData()},[])
 // a chaque fois que watchListData change (storeData est appelée)
-  useEffect(()=>{storeData()},[watchListData])
+  useEffect(()=>{storeData(watchListData)},[watchListData])
 
 //////////////////// NAVIGATION /////////////////////////
 // defining routes with components to be rendered
