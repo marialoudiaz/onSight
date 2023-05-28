@@ -83,8 +83,7 @@ const styles = StyleSheet.create({
   input: input, 
   text: text, 
   button: button, 
-  image: image,
-  searchbox: searchbox, 
+  image: image, 
   resultBlock: resultBlock,
   searchContainer: searchContainer,
   addButton:addButton,
@@ -93,9 +92,7 @@ const styles = StyleSheet.create({
   addWLBtn:addWLBtn,
   dropShadowInput:dropShadowInput,
   addButtonInput: {...addButton, right:55},
-  addButtonSearch: {...addButton, bottom:2, position: 'absolute',left:280, bottom:21},
   addButtonWL: {...addButton, right:10, height:40, width: 40, borderWidth: 3, borderColor:'#5072A7' },
   glassComponent: glassComponent,
   resultBlockWatch: {...resultBlock, flex:1},
-  resultBlockSearch: {...resultBlock, gap:50}
 })

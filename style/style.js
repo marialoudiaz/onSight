@@ -42,14 +42,25 @@
   }
 
   searchbox={
+    flex:1,
     fontSize: 13,
     backgroundColor: '#eee',
-    width:'100%',
     height: 60,
     borderRadius: 60,
-    paddingHorizontal: 20,
-    paddingVertical: 8,
+    marginTop:10,
+    marginLeft:15,
+    marginRight:30,
+    marginBottom:15,
+    padding:33,
+    
   }
+
+  searchBoxContainer= {
+    flexDirection: 'row',
+    alignItems:'center',
+    justifyContent:'space-between',
+    marginBottom:20
+  },
 
   dropShadowInput={
     shadowColor: '#3e3c3c',
@@ -86,6 +97,10 @@
   backgroundColor: 'white',
   height: 40,
   width: 40,
+  marginLeft: 'auto',
+  justifyContent:'center',
+  alignItems:'center',
+  textAlign:'center'
   }
 
   addWLBtn={
@@ -125,13 +140,6 @@
   overflow: 'hidden'
   }
 
-  bottomNavigation={
-    // flex: 1,
-    // justifyContent: 'center',
-    // alignItems:'center',
-    // backgroundColor: '#192b87',
-  }
-
 module.exports={
   container, 
   header,
@@ -148,5 +156,4 @@ module.exports={
   addWLBtn,
   dropShadowInput,
   glassComponent,
-  bottomNavigation
 }
